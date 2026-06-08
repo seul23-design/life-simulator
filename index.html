@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>7일간의 인생 역전 시뮬레이터 - 튜토리얼 업데이트</title>
+    <title>7일간의 인생 역전 시뮬레이터 - 인터페이스 개선</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', -apple-system, system-ui, sans-serif; }
         body { background-color: #f0f2f5; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
@@ -82,9 +82,11 @@
         
         .btn-system { background-color: #212529; color: white; grid-column: span 2; padding: 14px; font-size: 14px; border-radius: 12px; border: none; cursor: pointer; }
         .btn-shop-toggle { background-color: #fff4e6; color: #d9480f; border: 1px solid #ffd8a8; grid-column: span 2; padding: 14px; font-size: 13px; cursor: pointer; border-radius: 12px; font-weight: 700; }
-        .btn-event { background-color: #ffffff; color: #495057; border: 1px solid #ced4da; text-align: left; align-items: flex-start; width: 100%; cursor: pointer; border-radius: 12px; padding: 12px; }
+        
+        /* 🚨 중요: 조건 미달로 선택 불가능한 버튼을 짙은 회색으로 덮어버리는 마스터 스타일 */
+        .btn-event { background-color: #ffffff; color: #495057; border: 1px solid #ced4da; text-align: left; align-items: flex-start; width: 100%; cursor: pointer; border-radius: 12px; padding: 12px; transition: all 0.1s; }
+        .btn-event:disabled, .btn:disabled { background-color: #868e96 !important; color: #dee2e6 !important; border-color: #495057 !important; cursor: not-allowed !important; transform: none !important; opacity: 0.85; box-shadow: none; pointer-events: none; }
 
-        /* 모달 시스템 */
         .wellbeing-modal-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); border-radius:24px; display:flex; justify-content:center; align-items:center; z-index:999; }
         .wellbeing-modal-box { background: white; width:88%; max-width:400px; border-radius:18px; padding:22px; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,0.15); display:flex; flex-direction:column; gap:12px; transform: scale(0.9); animation: modalPop 0.25s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .modal-badge-icon { font-size:40px; margin-bottom: 2px; }
@@ -92,7 +94,6 @@
         .modal-subtext { font-size:12px; color:#444; line-height:1.6; background:#fff0f6; padding:12px; border-radius:10px; border:1px solid #ffdeeb; text-align: left; }
         .btn-modal-close { background:#d6336c; color:white; border:none; padding:12px; font-size:13px; font-weight:700; border-radius:10px; cursor:pointer; margin-top:4px; }
 
-        /* 튜토리얼 전용 모달 스타일 추가 */
         .tutorial-modal-box { border-top: 6px solid #667eea; }
         .tutorial-modal-box .modal-headline { color: #4c6ef5; }
         .tutorial-modal-box .modal-subtext { background: #edf2ff; border: 1px solid #d0bfff; color: #2b2b2b; }
@@ -187,7 +188,7 @@
             { id: "strategist", hint: "📈 지력 7 + 알바 7 이상 조합 완주", name: "📈 자본주의 흑막 마켓 메이커", desc: "알바 실전 생리와 고등 통계를 엮어 거대 작전 헤지펀드를 통제합니다.", badge: "📈 작전 세력 탭", effect: "지력 Lv.2 및 알바 Lv.2 선행 합산 스타트!" },
             { id: "model", hint: "📸 매력 7 + 체력 7 이상 조합 완주", name: "📸 밀라노 런웨이를 찢은 보디", desc: "다져진 조각 보디와 눈부신 아우라로 전 세계 패션 잡지를 독점합니다.", badge: "📸 인간 마네킹 아우라", effect: "매력 Lv.2 및 체력 Lv.2 선행 합산 스타트!" },
             { id: "idol", hint: "🎤 매력 7 + 알바 7 이상 조합 완주", name: "🎤 메가 엔터테인먼트 총괄 이사", desc: "소셜 캐피탈과 필드 실무 수완을 엮어 차세대 스타들을 양성합니다.", badge: "🎤 황금 마이더스의 손", effect: "매력 Lv.2 및 알바 Lv.2 선행 합산 스타트!" },
-            { id: "agent", hint: "🥷 체력 7 + 알바 7 이상 조합 완주", name: "🥷 첩보 전문 특수 작전 요원", desc: "현장 위장 기술과 은밀한 기동 피지컬을 결합해 비밀 임무를 뜁니다.", badge: "🥷 특수 기동 작전령", effect: "체력 Lv.2 및 알바 Lv.2 선행 합산 스타트!" },
+            { id: "agent", hint: "🥷 체력 7 + 알바 7 이상 조합 완주", name: "🥷 첩보 전문 특수 작전 요원", desc: "현장 위장 기술และ 은밀한 기동 피지컬을 결합해 비밀 임무를 뜁니다.", badge: "🥷 특수 기동 작전령", effect: "체력 Lv.2 및 알바 Lv.2 선행 합산 스타트!" },
             { id: "elite", hint: "🎓 3개 스탯이 동시에 5레벨 이상 도달", name: "🎓 육각형 밸런스 엘리트", desc: "어느 한 곳 흠잡을 데 없는 고품격 육각형 능력치를 구축한 완벽한 융합 인재입니다.", badge: "🎓 대치동 명예 수석", effect: "지력/매력/체력 전원 1레벨씩 선행 보정!" },
             { id: "lucky", hint: "🍀 백팩에 네잎클로버를 소지한 채 완주", name: "🍀 운명 초월 기적의 로또 주인공", desc: "능력치와 무관하게 평생 편하게 놀고먹는 축복받은 백수 엔딩입니다.", badge: "🍀 신이 내린 로또 행운", effect: "매일 야간 상점에서 복권 하나를 공짜 무상 지급!" },
             { id: "normal", hint: "🛌 특수 엔딩 조건에 모두 미달 시 생존", name: "🛌 스트레스 제로 웰빙 해탈 가이드", desc: "큰 욕심 없이 세상의 억까 속에서 상처 하나 없이 정신 건강을 보존했습니다.", badge: "🛌 소소한 웰빙의 평화", effect: "매일 아침 '당일 소멸성' 기력 +10 영양제 전용 지급!" }
@@ -200,10 +201,10 @@
             document.getElementById('game-container').innerHTML = `
                 <div class="title-screen">
                     <div>
-                        <span style="font-size:11px; font-weight:700; color:#b83280; background:#fff0f6; padding:4px 10px; border-radius:20px;">v19.5 TUTORIAL UPDATE</span>
+                        <span style="font-size:11px; font-weight:700; color:#b83280; background:#fff0f6; padding:4px 10px; border-radius:20px;">v19.7 비활성화 오류 픽스</span>
                     </div>
                     <h1 class="main-title">7일간의<br>인생 역전 시뮬레이터</h1>
-                    <p style="font-size:12px; color:#666; line-height:1.4;">[업데이트] 첫 시작 유저를 위한 웰컴 가이드 탑재!<br>가방 안 아이템의 실시간 기력 회복 정보가 이제 항상 노출됩니다.</p>
+                    <p style="font-size:12px; color:#666; line-height:1.4;">조건 미달 및 자금 부족 선택지가 직관적인 짙은 회색으로 완전히 차단됩니다.</p>
                     <div class="menu-btn-group">
                         <button class="btn-menu btn-menu-start" onclick="showSetupScreen()">🚀 캐릭터 설계 및 뱃지 설정</button>
                         <button class="btn-menu btn-menu-book" onclick="showArchiveBook()">📖 엔딩 & 보상 뱃지 도감</button>
@@ -212,7 +213,6 @@
             `;
         }
 
-        // 도감 해금 개수 세기 (튜토리얼 활성화 체크용)
         function getUnlockedEndingCount() {
             let count = 0;
             endingList.forEach(end => {
@@ -380,7 +380,6 @@
             let badgeAlert = selectedBadges.length > 0 ? `<br><span style="color:#5f3dc4; font-weight:700;">[🏅 장착 버프 활성화]: ${logIntroAdditions.join(', ')} 이 적용되었습니다!</span>` : "";
             document.getElementById('log-text').innerHTML = `${playerName}님, 시뮬레이션이 시작되었습니다! 아래 가이드에 따라 자유롭게 스케줄을 운영해 보세요.${badgeAlert}`;
             
-            // 웰빙 해탈 뱃지 지급 연산
             if (selectedBadges.includes('normal')) {
                 inventory.push("💊 소소한 행복 영양제");
                 spawnWellbeingModal(1);
@@ -388,7 +387,6 @@
 
             updateUI();
 
-            // 🛠️ [신규 추가] 해금된 엔딩이 0개인 진짜 생초짜 첫 시작일 때 튜토리얼 자동 소환!
             if (getUnlockedEndingCount() === 0) {
                 spawnTutorialModal();
             }
@@ -411,7 +409,7 @@
                         <div class="turn-badge" id="turn-display"></div>
                     </div>
                     <div style="display:flex; justify-content:space-between; font-weight:700; font-size:13px;">
-                        <span>🔋 기력 매니지먼트</span>
+                        <span>🔋 기력</span>
                         <span id="energy-text">100 / 100</span>
                     </div>
                     <div class="energy-bar-container"><div class="energy-bar" id="energy-bar"></div></div>
@@ -433,7 +431,6 @@
             `;
         }
 
-        // 🛠️ [신규 함수] 게임 극초반 가이드용 튜토리얼 팝업 모달창
         function spawnTutorialModal() {
             const gate = document.getElementById('modal-placement-gate');
             if(!gate) return;
@@ -450,11 +447,11 @@
                             <b>2. 알바 레벨(💼)의 권력:</b><br>
                             알바 레벨이 오를수록 일할 때 <b>버는 돈(G)이 파격적으로 가산</b>됩니다.<br><br>
                             <b>3. 🚨 돌발 이벤트 조건:</b><br>
-                            매일 아침 발생하는 돌발 상황은 <b>특정 능력치 레벨이 높아야만</b> 개방되는 특수 선택지가 존재하며, 보상이 매우 강력합니다.<br><br>
+                            매일 아침 발생하는 돌발 상황은 <b>특정 능력치 및 소지 자금</b> 조건이 미달되면 선택지가 짙은 회색으로 완전히 차단됩니다!<br><br>
                             <b>4. 🛒 야간 비밀 상점:</b><br>
                             12턴의 하루 일과가 모두 끝나면 침대 머리맡에서 버프 아이템을 살 수 있습니다.<br><br>
                             <b>5. 🏥 기력 0의 페널티:</b><br>
-                            행동 중 기력이 <b>0 이하가 되면 그 즉시 하루가 강제 종료(기절)</b>되며, 당일 야간 상점 이용이 전면 금지됩니다! 기력 매니지먼트에 유의하세요.
+                            행동 중 기력이 <b>0 이하가 되면 그 즉시 하루가 강제 종료(기절)</b>되며, 당일 야간 상점 이용이 전면 금지됩니다! 기력 관리에 유의하세요.
                         </div>
                         <button class="btn-modal-close btn-tutorial-close" onclick="closeTutorialModal()">가이드 숙지 완료! 시작하기</button>
                     </div>
@@ -535,7 +532,6 @@
             }
         }
 
-        // 🛠️ 가방 UI 렌더링 개정: 아이템 칩 우측에 직관적으로 (기력 +XX) 수치가 항상 적혀있게 보정
         function renderInventory() {
             const chipsContainer = document.getElementById('inventory-chips');
             if (inventory.length === 0) {
@@ -545,7 +541,6 @@
             let html = "";
             inventory.forEach((itemName, index) => {
                 let statusLabel = "";
-                // 이름 매칭을 통해 유저가 턴 중에 헷갈리지 않게 라벨 부착
                 if (itemName.includes("영양제")) statusLabel = " (기력+10)";
                 else if (itemName.includes("에스프레소")) statusLabel = " (기력+25)";
                 else if (itemName.includes("몬스터")) statusLabel = " (기력+50)";
@@ -666,7 +661,7 @@
                 logMsg = `🎒 [${findItem.name}]을 수령하여 가방에 보관했습니다. (낮에 클릭해 복용 가능)`;
             } else {
                 if (id === 'book') logMsg = addItemExp('int', 3);
-                else if (id === 'vitamin') logMsg = addItemExp('str', 3);
+                else if (id === 'vitamin') logMsg = "../../html" logMsg = addItemExp('str', 3);
                 else if (id === 'ampoule') logMsg = addItemExp('cha', 3);
                 else if (id === 'guidebook') logMsg = addItemExp('job', 3);
                 else if (id === 'clover') { inventory.push("🍀 네잎클로버"); logMsg = `🍀 [네잎클로버] 특수 엔딩용 행운 기물이 영구 가산되었습니다.`; }
@@ -806,58 +801,64 @@
             else if (day === 7) triggerDay7Event(morningAlert);
         }
 
+        /* 🚨 [오류 대수정 구역]: 능력치 제한은 물론, 30G/50G 등 자금 부족 시 완벽한 disabled(마우스 락) 및 짙은 회색 처리 */
         function triggerDay2Event(extra) {
-            const isLocked = levels.int < 2;
+            const coinLocked = gold < 30; // 30골드 체크
+            const smartLocked = levels.int < 2; // 지력 체크
+            
             document.getElementById('display-panel').innerHTML = `<div class="event-title">🚨 DAY 2 돌발: 가상자산 투자 유혹</div><p style="font-size:11px; color:#228be6;">${extra}</p>`;
             document.getElementById('action-area').innerHTML = `
-                <button class="btn btn-event" onclick="selectEventOption('coin-yes')"><span>🪙 친구를 믿고 30G SNOW코인 송금</span></button>
+                <button class="btn btn-event" onclick="selectEventOption('coin-yes')" ${coinLocked ? 'disabled' : ''}><span>${coinLocked ? '🔒 [30G 필요] ' : '🪙 '}친구를 믿고 30G SNOW코인 송금</span></button>
                 <button class="btn btn-event" onclick="selectEventOption('coin-no')"><span>🙅 거절하고 내 갈 길 간다.</span></button>
-                <button class="btn btn-event" onclick="selectEventOption('coin-smart')" ${isLocked ? 'disabled' : ''}><span>${isLocked ? '🔒 [지력 2 필요] ' : '💡 '}차트 분석으로 참교육</span></button>
+                <button class="btn btn-event" onclick="selectEventOption('coin-smart')" ${smartLocked ? 'disabled' : ''}><span>${smartLocked ? '🔒 [지력 2 필요] ' : '💡 '}차트 분석으로 참교육</span></button>
             `;
         }
         function triggerDay3Event(extra) {
-            const isLocked = levels.str < 2;
+            const payLocked = gold < 20; // 20골드 체크
+            const winLocked = levels.str < 2; // 체력 체크
+            
             document.getElementById('display-panel').innerHTML = `<div class="event-title">🚨 DAY 3 돌발: 골목길 취객 무리</div><p style="font-size:11px; color:#228be6;">${extra}</p>`;
             document.getElementById('action-area').innerHTML = `
                 <button class="btn btn-event" onclick="selectEventOption('fight-run')"><span>🏃 전력 도망 (기력-15)</span></button>
-                <button class="btn btn-event" onclick="selectEventOption('fight-pay')"><span>💸 20G 통행세 지불</span></button>
-                <button class="btn btn-event" onclick="selectEventOption('fight-win')" ${isLocked ? 'disabled' : ''}><span>${isLocked ? '🔒 [체력 2 필요] ' : '👊 '}피지컬로 제압</span></button>
+                <button class="btn btn-event" onclick="selectEventOption('fight-pay')" ${payLocked ? 'disabled' : ''}><span>${payLocked ? '🔒 [20G 필요] ' : '💸 '}20G 통행세 지불</span></button>
+                <button class="btn btn-event" onclick="selectEventOption('fight-win')" ${winLocked ? 'disabled' : ''}><span>${winLocked ? '🔒 [체력 2 필요] ' : '👊 '}피지컬로 제압</span></button>
             `;
         }
         function triggerDay4Event(extra) {
-            const isLocked = levels.cha < 3;
+            const epicLocked = levels.cha < 3;
             document.getElementById('display-panel').innerHTML = `<div class="event-title">🚨 DAY 4 돌발: 페스티벌 대타 무대</div><p style="font-size:11px; color:#228be6;">${extra}</p>`;
             document.getElementById('action-area').innerHTML = `
                 <button class="btn btn-event" onclick="selectEventOption('stage-no')"><span>😥 거절하고 잠적</span></button>
                 <button class="btn btn-event" onclick="selectEventOption('stage-bad')"><span>🎤 흑역사 무대 생성</span></button>
-                <button class="btn btn-event" onclick="selectEventOption('stage-epic')" ${isLocked ? 'disabled' : ''}><span>${isLocked ? '🔒 [매력 3 필요] ' : '✨ '}관객 대규모 홀딩</span></button>
+                <button class="btn btn-event" onclick="selectEventOption('stage-epic')" ${epicLocked ? 'disabled' : ''}><span>${epicLocked ? '🔒 [매력 3 필요] ' : '✨ '}관객 대규모 홀딩</span></button>
             `;
         }
         function triggerDay5Event(extra) {
-            const isLocked = levels.int < 4;
+            const castLocked = gold < 50; // 50골드 체크
+            const smartLocked = levels.int < 4;
             document.getElementById('display-panel').innerHTML = `<div class="event-title">🚨 DAY 5 돌발: 길거리 기획사 사기단</div><p style="font-size:11px; color:#228be6;">${extra}</p>`;
             document.getElementById('action-area').innerHTML = `
-                <button class="btn btn-event" onclick="selectEventOption('cast-yes')" ${gold < 50 ? 'disabled' : ''}><span>✨ 계약금 50G 선지급</span></button>
+                <button class="btn btn-event" onclick="selectEventOption('cast-yes')" ${castLocked ? 'disabled' : ''}><span>${castLocked ? '🔒 [50G 필요] ' : '✨ '}계약금 50G 선지급</span></button>
                 <button class="btn btn-event" onclick="selectEventOption('cast-no')"><span>🤨 경멸의 눈빛 퇴장</span></button>
-                <button class="btn btn-event" onclick="selectEventOption('cast-smart')" ${isLocked ? 'disabled' : ''}><span>${isLocked ? '🔒 [지력 4 필요] ' : '🕵️ '}사법 규정 조항 설파</span></button>
+                <button class="btn btn-event" onclick="selectEventOption('cast-smart')" ${smartLocked ? 'disabled' : ''}><span>${smartLocked ? '🔒 [지력 4 필요] ' : '🕵️ '}사법 규정 조항 설파</span></button>
             `;
         }
         function triggerDay6Event(extra) {
-            const isLocked = levels.str < 5;
+            const heroLocked = levels.str < 5;
             document.getElementById('display-panel').innerHTML = `<div class="event-title">🚨 DAY 6 돌발: 가벽 붕괴 구조 재난</div><p style="font-size:11px; color:#228be6;">${extra}</p>`;
             document.getElementById('action-area').innerHTML = `
                 <button class="btn btn-event" onclick="selectEventOption('rescue-watch')"><span>😰 소리쳐서 타인 유도</span></button>
                 <button class="btn btn-event" onclick="selectEventOption('rescue-fail')"><span>🏋️ 무리하다 요추 삐끗</span></button>
-                <button class="btn btn-event" onclick="selectEventOption('rescue-hero')" ${isLocked ? 'disabled' : ''}><span>${isLocked ? '🔒 [체력 5 필요] ' : '🚒 '}초인 파워로 구조</span></button>
+                <button class="btn btn-event" onclick="selectEventOption('rescue-hero')" ${heroLocked ? 'disabled' : ''}><span>${heroLocked ? '🔒 [체력 5 필요] ' : '🚒 '}초인 파워로 구조</span></button>
             `;
         }
         function triggerDay7Event(extra) {
-            const isLocked = levels.cha < 5;
+            const godLocked = levels.cha < 5;
             document.getElementById('display-panel').innerHTML = `<div class="event-title">🚨 DAY 7 돌발: 명품 패션쇼 런웨이</div><p style="font-size:11px; color:#228be6;">${extra}</p>`;
             document.getElementById('action-area').innerHTML = `
                 <button class="btn btn-event" onclick="selectEventOption('runway-pass')"><span>🏃 압박감에 도망</span></button>
                 <button class="btn btn-event" onclick="selectEventOption('runway-walk')"><span>🕴️ 목각 뚝딱이 보행</span></button>
-                <button class="btn btn-event" onclick="selectEventOption('runway-god')" ${isLocked ? 'disabled' : ''}><span>${isLocked ? '🔒 [매력 5 필요] ' : '👑 '}압도적 아우라 독점</span></button>
+                <button class="btn btn-event" onclick="selectEventOption('runway-god')" ${godLocked ? 'disabled' : ''}><span>${godLocked ? '🔒 [매력 5 필요] ' : '👑 '}압도적 아우라 독점</span></button>
             `;
         }
 
@@ -869,7 +870,7 @@
             else if (choice === 'fight-run') { currentEnergy = Math.max(0, currentEnergy - 15); resultMsg = "🏃 결과: 사력의 도망 완료. (기력 -15)"; }
             else if (choice === 'fight-pay') { gold = Math.max(0, gold - 20); resultMsg = "💸 결과: 삥을 뜯겼습니다. (-20G)"; }
             else if (choice === 'fight-win') { resultMsg = addItemExp('job', 2); }
-            else if (choice === 'stage-no') { resultMsg = "🧘 결과: 평온한 관람객 포지션 유지."; }
+            else if (choice === 'stage-no') { resultMsg = "🧘 결과: 평온한 관람객 포지션 유지"; }
             else if (choice === 'stage-bad') { currentExp.cha = 0; resultMsg = "😭 결과: 인터넷 흑역사 박제 (매력 경험치 초기화)"; }
             else if (choice === 'stage-epic') { gold += 100; resultMsg = "🎤 결과: 현장 위로금 수령! (+100G)"; }
             else if (choice === 'cast-yes') { gold = Math.max(0, gold - 50); resultMsg = "😭 결과: 위장 유령 계약 사기단이었습니다. (-50G)"; }
@@ -937,7 +938,7 @@
 
         function resetToTitle() {
             day = 1; gold = 0; currentEnergy = 100; currentTurn = maxTurn; faintCount = 0;
-            levels = { int: 0, cha: 0, str: 0, job: 0 }; currentExp = { int: 0, cha: 0, str: 0, job: 0 };
+            levels = { int: 0, chains: 0, str: 0, job: 0 }; currentExp = { int: 0, cha: 0, str: 0, job: 0 };
             currentTurnChoices = []; inventory = []; boughtItemsToday = []; selectedBadges = [];
             showTitleScreen();
         }
@@ -956,7 +957,7 @@
                 let decodedArr = JSON.parse(atob(code.trim()));
                 if (Array.isArray(decodedArr)) {
                     decodedArr.forEach(id => { localStorage.setItem(`end_lock_${id}`, "true"); });
-                    alert("🎉 도감 및 보상 뱃지가 완벽히 동기화되었습니다!");
+                    alert("🎉 도감 및 보상 뱃지가 동기화되었습니다!");
                     showArchiveBook();
                 }
             } catch(e) { alert("파싱 실패"); }
