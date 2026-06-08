@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>7일간의 인생 역전 시뮬레이터 - 웰빙 리워크</title>
+    <title>7일간의 인생 역전 시뮬레이터 - 튜토리얼 업데이트</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', -apple-system, system-ui, sans-serif; }
         body { background-color: #f0f2f5; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
@@ -60,12 +60,11 @@
         .active-badges-row { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
         .active-badge-pill { font-size: 10px; font-weight: 700; background: rgba(255,255,255,0.25); color: white; padding: 2px 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); }
 
-        .inventory-panel { background: #f1f3f5; border-radius: 12px; padding: 10px 14px; font-size: 13px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .inventory-panel { background: #f1f3f5; border-radius: 12px; padding: 10px 14px; font-size: 13px; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+        .inventory-chips { display: flex; gap: 8px; flex-wrap: wrap; width: 100%; }
         .item-chip { background: #ffffff; border: 1px solid #dee2e6; padding: 5px 10px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 12px; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.03); transition: all 0.1s; }
         .item-chip:hover { background: #fff4e6; border-color: #ffd8a8; transform: translateY(-1px); }
-
-        /* 웰빙 전용 일일 아이템 강조용 */
-        .item-chip.wellbeing-happy { background: #fff0f6; border: 1px dashed #h75191; color: #d6336c; font-weight: 800; animation: bounce 1s infinite alternate; }
+        .item-chip.wellbeing-happy { background: #fff0f6; border: 1px dashed #d6336c; color: #d6336c; font-weight: 800; animation: bounce 1s infinite alternate; }
 
         .display-panel { background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 16px; padding: 16px; min-height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
         .log-text { font-size: 14px; color: #495057; line-height: 1.5; }
@@ -85,13 +84,19 @@
         .btn-shop-toggle { background-color: #fff4e6; color: #d9480f; border: 1px solid #ffd8a8; grid-column: span 2; padding: 14px; font-size: 13px; cursor: pointer; border-radius: 12px; font-weight: 700; }
         .btn-event { background-color: #ffffff; color: #495057; border: 1px solid #ced4da; text-align: left; align-items: flex-start; width: 100%; cursor: pointer; border-radius: 12px; padding: 12px; }
 
-        /* 모달 팝업 레이아웃 스타일 */
+        /* 모달 시스템 */
         .wellbeing-modal-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); border-radius:24px; display:flex; justify-content:center; align-items:center; z-index:999; }
-        .wellbeing-modal-box { background: white; width:85%; max-width:380px; border-radius:18px; padding:22px; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,0.15); display:flex; flex-direction:column; gap:12px; transform: scale(0.9); animation: modalPop 0.25s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .wellbeing-modal-box { background: white; width:88%; max-width:400px; border-radius:18px; padding:22px; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,0.15); display:flex; flex-direction:column; gap:12px; transform: scale(0.9); animation: modalPop 0.25s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .modal-badge-icon { font-size:40px; margin-bottom: 2px; }
         .modal-headline { font-size:16px; font-weight:800; color:#b83280; }
-        .modal-subtext { font-size:12px; color:#555; line-height:1.5; background:#fff0f6; padding:10px; border-radius:10px; border:1px solid #ffdeeb; }
+        .modal-subtext { font-size:12px; color:#444; line-height:1.6; background:#fff0f6; padding:12px; border-radius:10px; border:1px solid #ffdeeb; text-align: left; }
         .btn-modal-close { background:#d6336c; color:white; border:none; padding:12px; font-size:13px; font-weight:700; border-radius:10px; cursor:pointer; margin-top:4px; }
+
+        /* 튜토리얼 전용 모달 스타일 추가 */
+        .tutorial-modal-box { border-top: 6px solid #667eea; }
+        .tutorial-modal-box .modal-headline { color: #4c6ef5; }
+        .tutorial-modal-box .modal-subtext { background: #edf2ff; border: 1px solid #d0bfff; color: #2b2b2b; }
+        .btn-tutorial-close { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
 
         @keyframes modalPop { to { transform: scale(1); } }
         @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-2px); } }
@@ -176,7 +181,7 @@
             { id: "scholar", hint: "🔬 지력 스탯 단독 9레벨 만렙 달성", name: "🔬 인류 지성을 뒤흔든 석학", desc: "사기꾼 무리를 완벽한 논리로 분쇄한 인공지능 수석 아키텍트입니다.", badge: "🧠 아인슈타인의 뇌", effect: "지력 레벨 3단계 선행 스타트! (고급 탐색 개방)" },
             { id: "celeb", hint: "💎 매력 스탯 단독 9레벨 만렙 달성", name: "💎 시대를 리드하는 글로벌 탑 셀럽", desc: "숨만 쉬어도 바이럴 유행을 만드는 세계 최고의 패션 워너비입니다.", badge: "✨ 천만 아우라 조명", effect: "매력 레벨 3단계 선행 스타트! (상위 사교 개방)" },
             { id: "physical", hint: "🏋️ 체력 스탯 단독 9레벨 만렙 달성", name: "🏋️ 신체 기믹 완전 개방 철인", desc: "올림픽 명예의 전당 프리패스급 인재. 재난 속에서 빛나는 괴력입니다.", badge: "💪 고농축 에르핀 근육", effect: "체력 레벨 3단계 선행 스타트!" },
-            { id: "ceo", hint: "💼 알바 스탯 단독 9레벨 만렙 달성", name: "💼 글로벌 프랜차이즈 연합 의장", desc: "알바 수완에서 시작해 국가 경제 구조의 유통망 네트워크를 삼켰습니다.", badge: "💼 백종원급 수완가", effect: "알바 레벨 3단계 선행 스타트! (초반 급여 가산)" },
+            { id: "ceo", hint: "💼 알바 스탯 단독 9레벨 만렙 달성", name: "💼 글로벌 프랜차이즈 연합 의장", desc: "알바 수완에서 시작해 국가 경제 구조의 유통망 네트워크를 삼겼습니다.", badge: "💼 백종원급 수완가", effect: "알바 레벨 3단계 선행 스타트! (초반 급여 가산)" },
             { id: "cyborg", hint: "🤖 지력 7 + 체력 7 이상 조합 완주", name: "🤖 사이보그 마스터 마인드", desc: "지치지 않는 뇌 연산 장치와 강인한 심장을 장착한 테크 진화학 선두입니다.", badge: "🤖 안드로이드 연산력", effect: "지력 Lv.2 및 체력 Lv.2 선행 합산 스타트!" },
             { id: "politician", hint: "🏛️ 지력 7 + 매력 7 이상 조합 완주", name: "🏛️ 국가 공인 천재 정치가", desc: "천재적인 미사여구 대중을 매료시키는 눈빛으로 법령을 쥐고 흔듭니다.", badge: "🏛️ 여론 통제 마스터", effect: "지력 Lv.2 및 매력 Lv.2 선행 합산 스타트!" },
             { id: "strategist", hint: "📈 지력 7 + 알바 7 이상 조합 완주", name: "📈 자본주의 흑막 마켓 메이커", desc: "알바 실전 생리와 고등 통계를 엮어 거대 작전 헤지펀드를 통제합니다.", badge: "📈 작전 세력 탭", effect: "지력 Lv.2 및 알바 Lv.2 선행 합산 스타트!" },
@@ -195,16 +200,25 @@
             document.getElementById('game-container').innerHTML = `
                 <div class="title-screen">
                     <div>
-                        <span style="font-size:11px; font-weight:700; color:#b83280; background:#fff0f6; padding:4px 10px; border-radius:20px;">v19.2 WELLBEING REWORK</span>
+                        <span style="font-size:11px; font-weight:700; color:#b83280; background:#fff0f6; padding:4px 10px; border-radius:20px;">v19.5 TUTORIAL UPDATE</span>
                     </div>
                     <h1 class="main-title">7일간의<br>인생 역전 시뮬레이터</h1>
-                    <p style="font-size:12px; color:#666; line-height:1.4;">[리워크 완료] 웰빙 뱃지가 매일 아침 <b>'소소한 행복 영양제'</b>를 소출합니다.<br>이 영양제는 오늘 쓰지 않으면 밤샘 침대 정산 시 강제 소멸합니다.</p>
+                    <p style="font-size:12px; color:#666; line-height:1.4;">[업데이트] 첫 시작 유저를 위한 웰컴 가이드 탑재!<br>가방 안 아이템의 실시간 기력 회복 정보가 이제 항상 노출됩니다.</p>
                     <div class="menu-btn-group">
                         <button class="btn-menu btn-menu-start" onclick="showSetupScreen()">🚀 캐릭터 설계 및 뱃지 설정</button>
                         <button class="btn-menu btn-menu-book" onclick="showArchiveBook()">📖 엔딩 & 보상 뱃지 도감</button>
                     </div>
                 </div>
             `;
+        }
+
+        // 도감 해금 개수 세기 (튜토리얼 활성화 체크용)
+        function getUnlockedEndingCount() {
+            let count = 0;
+            endingList.forEach(end => {
+                if (localStorage.getItem(`end_lock_${end.id}`) === "true") count++;
+            });
+            return count;
         }
 
         function getRequiredExp(level) { 
@@ -364,15 +378,20 @@
             renderBaseLayout();
             
             let badgeAlert = selectedBadges.length > 0 ? `<br><span style="color:#5f3dc4; font-weight:700;">[🏅 장착 버프 활성화]: ${logIntroAdditions.join(', ')} 이 적용되었습니다!</span>` : "";
-            document.getElementById('log-text').innerHTML = `${playerName}님, 시뮬레이션이 시작되었습니다! 매일 아침 지급되는 소멸성 영양제를 적극 활용해 보세요.${badgeAlert}`;
+            document.getElementById('log-text').innerHTML = `${playerName}님, 시뮬레이션이 시작되었습니다! 아래 가이드에 따라 자유롭게 스케줄을 운영해 보세요.${badgeAlert}`;
             
-            // 🛠️ 1일차 진입할 때도 웰빙 뱃지가 켜져있다면 즉시 아이템 지급 및 알림창 팝업 발동!
+            // 웰빙 해탈 뱃지 지급 연산
             if (selectedBadges.includes('normal')) {
                 inventory.push("💊 소소한 행복 영양제");
                 spawnWellbeingModal(1);
             }
 
             updateUI();
+
+            // 🛠️ [신규 추가] 해금된 엔딩이 0개인 진짜 생초짜 첫 시작일 때 튜토리얼 자동 소환!
+            if (getUnlockedEndingCount() === 0) {
+                spawnTutorialModal();
+            }
         }
 
         function renderBaseLayout() {
@@ -405,13 +424,49 @@
                     <div class="active-badges-row">${badgesHtml}</div>
                     <div style="margin-top: 8px; font-size: 13px; text-align: right; font-weight: 600;">💰 자금: <span id="stat-gold">0</span> G | 🏥 과로: <span id="stat-faint" style="color:#ff5e62; font-weight:700;">0</span>회</div>
                 </div>
-                <div class="inventory-panel" id="inventory-panel">🎒 보관함이 비어있습니다.</div>
+                <div class="inventory-panel" id="inventory-panel">
+                    <span style="font-size:11px; color:#666; font-weight:600;">🎒 배낭 (클릭하면 즉시 사용)</span>
+                    <div class="inventory-chips" id="inventory-chips">보관함이 비어있습니다.</div>
+                </div>
                 <div class="display-panel" id="display-panel"><p class="log-text" id="log-text"></p></div>
                 <div class="action-grid" id="action-area"></div>
             `;
         }
 
-        // 🛠️ [신규 함수] 웰빙 뱃지 전용 알림 모달 출력기
+        // 🛠️ [신규 함수] 게임 극초반 가이드용 튜토리얼 팝업 모달창
+        function spawnTutorialModal() {
+            const gate = document.getElementById('modal-placement-gate');
+            if(!gate) return;
+
+            gate.innerHTML = `
+                <div class="wellbeing-modal-overlay" id="tutorial-overlay">
+                    <div class="wellbeing-modal-box tutorial-modal-box">
+                        <div class="modal-badge-icon">📖</div>
+                        <div class="modal-headline">🔰 신입 플레이어 핵심 생존 가이드</div>
+                        <div class="modal-subtext">
+                            안녕하세요! 인생 역전을 달성하기 위한 5가지 필수 룰을 전해드립니다.<br><br>
+                            <b>1. 체력 레벨(💪)의 중요성:</b><br>
+                            체력 레벨이 높아질수록 일과 행동 시 소모되는 <b>기력 비용이 점점 감소</b>합니다!<br><br>
+                            <b>2. 알바 레벨(💼)의 권력:</b><br>
+                            알바 레벨이 오를수록 일할 때 <b>버는 돈(G)이 파격적으로 가산</b>됩니다.<br><br>
+                            <b>3. 🚨 돌발 이벤트 조건:</b><br>
+                            매일 아침 발생하는 돌발 상황은 <b>특정 능력치 레벨이 높아야만</b> 개방되는 특수 선택지가 존재하며, 보상이 매우 강력합니다.<br><br>
+                            <b>4. 🛒 야간 비밀 상점:</b><br>
+                            12턴의 하루 일과가 모두 끝나면 침대 머리맡에서 버프 아이템을 살 수 있습니다.<br><br>
+                            <b>5. 🏥 기력 0의 페널티:</b><br>
+                            행동 중 기력이 <b>0 이하가 되면 그 즉시 하루가 강제 종료(기절)</b>되며, 당일 야간 상점 이용이 전면 금지됩니다! 기력 매니지먼트에 유의하세요.
+                        </div>
+                        <button class="btn-modal-close btn-tutorial-close" onclick="closeTutorialModal()">가이드 숙지 완료! 시작하기</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function closeTutorialModal() {
+            const overlay = document.getElementById('tutorial-overlay');
+            if (overlay) overlay.remove();
+        }
+
         function spawnWellbeingModal(currentDay) {
             const gate = document.getElementById('modal-placement-gate');
             if(!gate) return;
@@ -421,7 +476,7 @@
                     <div class="wellbeing-modal-box">
                         <div class="modal-badge-icon">🛌</div>
                         <div class="modal-headline">소소한 행복 배달 완료! (DAY ${currentDay})</div>
-                        <div class="modal-subtext">
+                        <div class="modal-subtext" style="text-align:center;">
                             웰빙 해탈 가이드의 축복이 내렸습니다.<br>
                             가방에 <b>[💊 소소한 행복 영양제]</b>가 지급되었습니다!<br><br>
                             <span style="color:#fa5252; font-weight:700;">⚠️ 주의: 오늘 밤 취침 전까지 먹지 않으면 흔적도 없이 사라집니다!</span>
@@ -480,22 +535,30 @@
             }
         }
 
+        // 🛠️ 가방 UI 렌더링 개정: 아이템 칩 우측에 직관적으로 (기력 +XX) 수치가 항상 적혀있게 보정
         function renderInventory() {
-            const invPanel = document.getElementById('inventory-panel');
+            const chipsContainer = document.getElementById('inventory-chips');
             if (inventory.length === 0) {
-                invPanel.innerHTML = `<span>🎒 보관함이 비어있습니다.</span>`;
+                chipsContainer.innerHTML = `<span style="font-size:12px; color:#adb5bd;">보관함이 비어있습니다.</span>`;
                 return;
             }
-            let html = `<span style="font-weight:700; color:#495057;">🎒 가방(클릭시사용):</span> `;
+            let html = "";
             inventory.forEach((itemName, index) => {
-                // 웰빙 전용 아이템은 시각적인 애니메이션과 핑크빛 스타일 가산 처리
+                let statusLabel = "";
+                // 이름 매칭을 통해 유저가 턴 중에 헷갈리지 않게 라벨 부착
+                if (itemName.includes("영양제")) statusLabel = " (기력+10)";
+                else if (itemName.includes("에스프레소")) statusLabel = " (기력+25)";
+                else if (itemName.includes("몬스터")) statusLabel = " (기력+50)";
+                else if (itemName.includes("클로버")) statusLabel = " (엔딩용)";
+                else if (itemName.includes("복권")) statusLabel = " (도박성)";
+
                 if (itemName.includes("소소한 행복 영양제")) {
-                    html += `<span class="item-chip wellbeing-happy" onclick="useInventoryItem(${index})">${itemName}</span>`;
+                    html += `<span class="item-chip wellbeing-happy" onclick="useInventoryItem(${index})">${itemName}${statusLabel}</span>`;
                 } else {
-                    html += `<span class="item-chip" onclick="useInventoryItem(${index})">${itemName}</span>`;
+                    html += `<span class="item-chip" onclick="useInventoryItem(${index})">${itemName}${statusLabel}</span>`;
                 }
             });
-            invPanel.innerHTML = html;
+            chipsContainer.innerHTML = html;
         }
 
         function useInventoryItem(index) {
@@ -507,7 +570,6 @@
             let useSuccess = false;
             let resultText = "";
             
-            // 🛠️ 영양제 복용 기믹 설계
             if (itemName.includes("소소한 행복 영양제")) {
                 currentEnergy = Math.min(100, currentEnergy + 10);
                 resultText = `💊 <b>소소한 행복 영양제</b>를 복용했습니다! 기력이 소소하게 +10 회복됩니다.`;
@@ -591,23 +653,6 @@
             actionArea.innerHTML = htmlContent;
         }
 
-        function addItemExp(type, amount) {
-            if (levels[type] >= 9) return "이미 최고 레벨(MAX) 상태입니다.";
-            currentExp[type] += amount;
-            let lvUpCount = 0;
-            while (currentExp[type] >= getRequiredExp(levels[type])) {
-                currentExp[type] -= getRequiredExp(levels[type]);
-                levels[type]++;
-                lvUpCount++;
-                if (levels[type] >= 9) { currentExp[type] = 0; break; }
-            }
-            let typeName = type === 'int' ? '🧠 지력' : type === 'cha' ? '✨ 매력' : type === 'str' ? '💪 체력' : '💼 알바';
-            if (lvUpCount > 0) {
-                return `✨ [${typeName}] 경험치 +${amount} 누적! <span class="levelup-text">🎉 레벨 업 -> Lv.${levels[type]}</span>`;
-            }
-            return `✨ [${typeName}] 경험치 +${amount} 증가했습니다.`;
-        }
-
         function buyShopItem(id, price) {
             if (boughtItemsToday.includes(id) || gold < price) return;
             gold -= price;
@@ -636,6 +681,23 @@
             document.getElementById('display-panel').innerHTML = `<div class="shop-title">🛒 결제 완료</div><p class="log-text">${logMsg}</p>`;
             renderShopActions();
             updateUI();
+        }
+
+        function addItemExp(type, amount) {
+            if (levels[type] >= 9) return "이미 최고 레벨(MAX) 상태입니다.";
+            currentExp[type] += amount;
+            let lvUpCount = 0;
+            while (currentExp[type] >= getRequiredExp(levels[type])) {
+                currentExp[type] -= getRequiredExp(levels[type]);
+                levels[type]++;
+                lvUpCount++;
+                if (levels[type] >= 9) { currentExp[type] = 0; break; }
+            }
+            let typeName = type === 'int' ? '🧠 지력' : type === 'cha' ? '✨ 매력' : type === 'str' ? '💪 체력' : '💼 알바';
+            if (lvUpCount > 0) {
+                return `✨ [${typeName}] 경험치 +${amount} 누적! <span class="levelup-text">🎉 레벨 업 -> Lv.${levels[type]}</span>`;
+            }
+            return `✨ [${typeName}] 경험치 +${amount} 증가했습니다.`;
         }
 
         function exitShop() {
@@ -716,7 +778,6 @@
         }
 
         function nextDay() {
-            // 🛠️ [리워크 핵심 연산] 자러 가기 전에 인벤토리에 남아있던 '소소한 행복 영양제'는 전부 탐색하여 가방에서 소멸(필터링)시킵니다.
             inventory = inventory.filter(itemName => !itemName.includes("소소한 행복 영양제"));
 
             day++; currentTurn = maxTurn; currentTurnChoices = []; generateShopItems(); 
@@ -725,7 +786,6 @@
             currentEnergy = maxEnergy; 
             let morningAlert = "";
             
-            // 🛠️ 웰빙 뱃지가 켜져 있다면, 가방에 영양제 추가 및 전용 모달 출력 트리거링 작동
             if (selectedBadges.includes('normal')) {
                 inventory.push("💊 소소한 행복 영양제");
                 spawnWellbeingModal(day);
