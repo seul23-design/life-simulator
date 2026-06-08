@@ -79,6 +79,8 @@
         .btn-study { background-color: #e6fcf5; color: #0ca678; }
         .btn-hobby { background-color: #f3f0ff; color: #7048e8; }
         .btn-rest { background-color: #fff9db; color: #f08000; }
+
+        .btn-buy:disabled {background: #e9ecef !important; color: #adb5bd !important; cursor: not-allowed !important; }
         
         .btn-system { background-color: #212529; color: white; grid-column: span 2; padding: 14px; font-size: 14px; border-radius: 12px; border: none; cursor: pointer; }
         .btn-shop-toggle { background-color: #fff4e6; color: #d9480f; border: 1px solid #ffd8a8; grid-column: span 2; padding: 14px; font-size: 13px; cursor: pointer; border-radius: 12px; font-weight: 700; }
@@ -663,30 +665,57 @@
         
         function openShopMenu() {
             gameMode = "SHOP";
+            
+            // 1. 진열된 아이템 목록을 중앙 패널용 세로형 리스트 HTML로 만듭니다.
+            let shopItemsHtml = "";
+            currentShopItems.forEach((item) => {
+                const alreadyBought = boughtItemsToday.includes(item.id);
+                const isCloverOwned = item.id === "clover" && inventory.includes("🍀 네잎클로버");
+                const canAfford = gold >= item.price;
+                
+                // 버튼 비활성화 조건 설정
+                let btnDisabled = !canAfford || alreadyBought || isCloverOwned;
+                let btnText = alreadyBought ? "품절" : (isCloverOwned ? "소지중" : "구매");
+                
+                shopItemsHtml += `
+                    <div class="shop-item" style="background: #ffffff; border: 1px solid #e9ecef; padding: 12px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                        <div class="shop-item-info" style="display: flex; flex-direction: column; gap: 2px; text-align: left;">
+                            <strong style="color: #212529; font-size: 13px;">${item.name}</strong>
+                            <span style="font-size: 11px; color: #495057;">${item.desc}</span>
+                            <span style="font-size: 11px; color: #fd7e14; font-weight: 700;">${item.price}G</span>
+                        </div>
+                        <button class="btn-buy" onclick="buyShopItem('${item.id}', ${item.price})" ${btnDisabled ? 'disabled' : ''} 
+                                style="padding: 6px 14px; background: #fd7e14; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 12px; min-width: 65px;">
+                            ${btnText}
+                        </button>
+                    </div>
+                `;
+            });
+
+            // 2. 중앙 디스플레이 패널에 세로형 상점 진열대를 예쁘게 집어넣습니다.
             document.getElementById('display-panel').innerHTML = `
-                <div class="shop-title">🌙 야간 비밀 상점 오픈</div>
-                <p class="log-text">내일 일과를 편하게 만들어 줄 버프 아이템을 구매하세요.</p>
+                <div class="shop-grid" style="display: flex; flex-direction: column; width: 100%;">
+                    <div style="font-weight: 800; font-size: 16px; text-align: center; color: #d9480f; margin-bottom: 4px;">🌙 야간 비밀 상점 오픈</div>
+                    <p style="font-size: 11px; color: #868e96; text-align: center; margin-bottom: 12px;">내일 일과를 편하게 만들어 줄 버프 아이템을 구매하세요.</p>
+                    <div style="max-height: 240px; overflow-y: auto; padding-right: 4px;">
+                        ${shopItemsHtml}
+                    </div>
+                </div>
             `;
+            
+            // 3. 하단 액션 공간을 렌더링하고 상태창을 업데이트합니다.
+            renderShopActions();
             updateUI();
         }
 
         function renderShopActions() {
             const actionArea = document.getElementById('action-area');
-            let htmlContent = "";
-
-            currentShopItems.forEach((item) => {
-                const alreadyBought = boughtItemsToday.includes(item.id);
-                const canAfford = gold >= item.price;
-                
-                if (alreadyBought) {
-                    htmlContent += `<button class="btn" style="background:#e9ecef; color:#adb5bd; cursor:not-allowed;" disabled><span>🔒 ${item.name}</span><span class="lock-icon">금일 품절</span></button>`;
-                } else {
-                    htmlContent += `<button class="btn" style="background:#fff4e6; color:#d9480f;" onclick="buyShopItem('${item.id}', ${item.price})" ${!canAfford ? 'disabled' : ''}><span>${item.name} (${item.price}G)</span><span class="badge">${item.desc}</span></button>`;
-                }
-            });
-
-            htmlContent += `<button class="btn btn-system" onclick="exitShop()"><span>🔙 쇼핑 종료하고 잘 준비하기</span></button>`;
-            actionArea.innerHTML = htmlContent;
+            // 🌟 하단에는 기존 게임의 고유 탈출 함수인 exitShop() 버튼 하나만 깔끔하게 띄워줍니다.
+            actionArea.innerHTML = `
+                <button class="btn btn-system" onclick="exitShop()" style="background-color: #212529; color: white; width: 100%; grid-column: span 2; padding: 14px; font-size: 14px; border-radius: 12px; border: none; cursor: pointer; font-weight: 700;">
+                    <span>🔙 쇼핑 종료하고 잘 준비하기</span>
+                </button>
+            `;
         }
 
         function buyShopItem(id, price) {
@@ -714,9 +743,11 @@
                 }
             }
 
-            document.getElementById('display-panel').innerHTML = `<div class="shop-title">🛒 결제 완료</div><p class="log-text">${logMsg}</p>`;
-            renderShopActions();
-            updateUI();
+            // 🌟 [핵심 변경 사항]: 구매 내역을 상단에 작은 팝업(alert)으로 띄워 가독성을 높이고,
+            // 상점 화면을 닫지 않고 그 자리에서 즉시 실시간 리렌더링하여 연속 구매를 지원합니다!
+            alert(`🛒 결제 완료!\n${logMsg.replace(/<\/?[^>]+(>|$)/g, "")}`); // HTML 태그 제외 후 깔끔하게 알림
+            
+            openShopMenu(); // 상점 UI 새로고침 (품절 처리 및 골드 차감 반영)
         }
 
         function addItemExp(type, amount) {
