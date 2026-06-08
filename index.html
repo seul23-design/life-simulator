@@ -902,8 +902,9 @@
             if (levels.str >= 5) eliteStatsCount++;
             if (levels.job >= 5) eliteStatsCount++;
 
-            if (levels.int >= 9 && levels.cha >= 9 && levels.str >= 9 && levels.job >= 9) { endingId = "god"; }
-            else if (faintCount >= 3) { endingId = "exhaust"; }
+            if (faintCount >= 3) { endingId = "exhaust"; }
+            else if (levels.int >= 9 && levels.cha >= 9 && levels.str >= 9 && levels.job >= 9) { endingId = "god"; }
+            else if (hasClover) { endingId = "lucky"; }
             else if (gold >= 200) { endingId = "asset"; }
             else if (levels.int >= 9) { endingId = "scholar"; }
             else if (levels.cha >= 9) { endingId = "celeb"; }
@@ -916,7 +917,6 @@
             else if (levels.cha >= 7 && levels.job >= 7) { endingId = "idol"; }
             else if (levels.str >= 7 && levels.job >= 7) { endingId = "agent"; }
             else if (eliteStatsCount >= 3) { endingId = "elite"; }
-            else if (hasClover) { endingId = "lucky"; }
             else { endingId = "normal"; }
 
             let currentEndingObj = endingList.find(e => e.id === endingId);
