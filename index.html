@@ -176,27 +176,24 @@
 
         const endingList = [
             { id: "god", hint: "👑 모든 능력치 9레벨 만렙 도달", name: "👑 신 인류의 탄생", desc: "지력, 매력, 체력, 자본을 완벽히 동기화한 마스터 가이드의 탄생입니다.", badge: "👑 초월자의 패시브", effect: "모든 스탯 초기 보너스 경험치 듬뿍 탑재!" },
-            { id: "asset", hint: "💰 최종 보유 자금 200G 이상 완주", name: "💰 황금 제국의 지배자", desc: "압도적인 유동 자산을 확보하여 월스트리트를 뒤흔드는 자본 자산가입니다.", badge: "💰 다이아몬드 수저", effect: "초기 보유 자금 +80G 상태로 여유롭게 스타트!" },
+            { id: "asset", hint: "💰 최종 보유 자금 200G 이상 완주", name: "💰 건물주", desc: "압도적인 자산을 확보한 자본 자산가입니다.", badge: "💰 다이아몬드 수저", effect: "초기 보유 자금 +80G 상태로 여유롭게 스타트!" },
             { id: "exhaust", hint: "🏥 기력 부족 강제 기절 3회 이상", name: "🏥 만성 과로사 증후군", desc: "스케줄 연산 실패로 몸이 완전히 망가진 채 침대 신세를 지게 된 파멸의 워커홀릭입니다.", badge: "🏥 영혼의 바퀴벌레", effect: "체력 스탯 보너스 경험치 +9 포인트 선행!" },
-            
+
+           
+
             /* 📝 수정 포인트: 지력 만렙 엔딩 담백화 및 대사(따옴표) 처리 적용 */
-            { id: "scholar", hint: "🔬 지력 스탯 단독 9레벨 만렙 달성", name: "🔬 국가 대표급 명석한 두뇌", desc: "\"방금 하신 말씀, 전부 오류네요.\" 사기꾼들의 얄팍한 속임수를 빈틈없는 논리로 반박해 버리는 공부 괴물입니다. 세상의 모든 정답을 꿰뚫어 보는 최고의 지성을 증명했습니다.", badge: "🧠 아인슈타인의 뇌", effect: "지력 초기 보너스 경험치 +9 가산 (중첩 가능)" },
-            
-            { id: "celeb", hint: "💎 매력 스탯 단독 9레벨 만렙 달성", name: "💎 시대를 리드하는 글로벌 탑 셀럽", desc: "숨만 쉬어도 바이럴 유행을 만드는 세계 최고의 패션 워너비입니다.", badge: "✨ 천만 아우라 조명", effect: "매력 초기 보너스 경험치 +9 가산 (중첩 가능)" },
-            
-            /* 📝 수정 포인트: 체력 만렙 엔딩 대사 통일 및 묵직한 현실 피지컬 톤 적용 */
+
+            { id: "scholar", hint: "🔬 지력 스탯 단독 9레벨 만렙 달성", name: "🔬 세계를 흔드는 천재", desc: "\"방금 하신 말씀, 전부 오류네요.\" 사기꾼들의 얄팍한 속임수를 빈틈없는 논리로 반박해 버리는 공부 괴물입니다. 세상의 모든 정답을 꿰뚫어 보는 최고의 지성을 증명했습니다.", badge: "🧠 아인슈타인의 뇌", effect: "지력 초기 보너스 경험치 +9 가산 (중첩 가능)" },
+            { id: "celeb", hint: "💎 매력 스탯 단독 9레벨 만렙 달성", name: "💎 시대를 리드하는 글로벌 탑 아이돌", desc: "숨만 쉬어도 바이럴 유행을 만드는 세계 최고, 모두의 워너비입니다.", badge: "✨ 천만 아우라 조명", effect: "매력 초기 보너스 경험치 +9 가산 (중첩 가능)" },
             { id: "physical", hint: "🏋️ 체력 스탯 단독 9레벨 만렙 달성", name: "🏋️ 인간의 한계를 넘어선 피지컬", desc: "\"다치기 싫으면 비켜 계세요.\" 웬만한 위기 상황이나 무거운 짐쯤은 맨손으로 가볍게 해결해 버리는 괴력의 소유자입니다. 강인한 체력과 완벽한 보디 스펙으로 세상을 지배합니다.", badge: "💪 고농축 에르핀 근육", effect: "체력 초기 보너스 경험치 +9 가산 (중첩 가능)" },
-            
-            { id: "ceo", hint: "💼 알바 스탯 단독 9레벨 만렙 달성", name: "💼 글로벌 프랜차이즈 연합 의장", desc: "알바 수완에서 시작해 국가 경제 구조의 유통망 네트워크를 삼겼습니다.", badge: "💼 백종원급 수완가", effect: "알바 초기 보너스 경험치 +9 가산 (중첩 가능)" },
-            
-            /* 📝 수정 포인트: 2개 스탯 복합형 뱃지 가산 수치를 2레벨 고정에서 경험치 +5/+5 무한 중첩형으로 밸런스 변경 */
-            { id: "cyborg", hint: "🤖 지력 7 + 체력 7 이상 조합 완주", name: "🤖 사이보그 마스터 마인드", desc: "지치지 않는 뇌 연산 장치와 강인한 심장을 장착한 테크 진화학 선두입니다.", badge: "🤖 안드로이드 연산력", effect: "지력 경험치 +5 및 체력 경험치 +5 정밀 가산!" },
+            { id: "ceo", hint: "💼 알바 스탯 단독 9레벨 만렙 달성", name: "💼 글로벌 프랜차이즈 연합 의장", desc: "알바 수완에서 시작해 국가 경제 구조의 유통망 네트워크를 삼겼습니다.", badge: "💼 완벽한 수완가", effect: "알바 초기 보너스 경험치 +9 가산 (중첩 가능)" },
+            { id: "cyborg", hint: "🤖 지력 7 + 체력 7 이상 조합 완주", name: "🤖 사이보그 ", desc: "지치지 않는 뇌 연산 장치와 강인한 심장을 장착한 사이보그입니다.", badge: "🤖 안드로이드 연산력", effect: "지력 경험치 +5 및 체력 경험치 +5 정밀 가산!" },
             { id: "politician", hint: "🏛️ 지력 7 + 매력 7 이상 조합 완주", name: "🏛️ 국가 공인 천재 정치가", desc: "천재적인 미사여구 대중을 매료시키는 눈빛으로 법령을 쥐고 흔듭니다.", badge: "🏛️ 여론 통제 마스터", effect: "지력 경험치 +5 및 매력 경험치 +5 정밀 가산!" },
             { id: "strategist", hint: "📈 지력 7 + 알바 7 이상 조합 완주", name: "📈 자본주의 흑막 마켓 메이커", desc: "알바 실전 생리와 고등 통계를 엮어 거대 작전 헤지펀드를 통제합니다.", badge: "📈 작전 세력 탭", effect: "지력 경험치 +5 및 알바 경험치 +5 정밀 가산!" },
-            { id: "model", hint: "📸 매력 7 + 체력 7 이상 조합 완주", name: "📸 밀라노 런웨이를 찢은 보디", desc: "다져진 조각 보디와 눈부신 아우라로 전 세계 패션 잡지를 독점합니다.", badge: "📸 인간 마네킹 아우라", effect: "매력 경험치 +5 및 체력 경험치 +5 정밀 가산!" },
-            { id: "idol", hint: "🎤 매력 7 + 알바 7 이상 조합 완주", name: "🎤 메가 엔터테인먼트 총괄 이사", desc: "소셜 캐피탈과 필드 실무 수완을 엮어 차세대 스타들을 양성합니다.", badge: "🎤 황금 마이더스의 손", effect: "매력 경험치 +5 및 알바 경험치 +5 정밀 가산!" },
-            { id: "agent", hint: "🥷 체력 7 + 알바 7 이상 조합 완주", name: "🥷 첩보 전문 특수 작전 요원", desc: "현장 위장 기술และ 은밀한 기동 피지컬을 결합해 비밀 임무를 뜁니다.", badge: "🥷 특수 기동 작전령", effect: "체력 경험치 +5 및 알바 경험치 +5 정밀 가산!" },
-            
+            { id: "model", hint: "📸 매력 7 + 체력 7 이상 조합 완주", name: "📸 밀라노 런웨이 모델", desc: "다져진 조각 보디와 눈부신 아우라로 전 세계 패션 잡지를 독점합니다.", badge: "📸 인간 마네킹 아우라", effect: "매력 경험치 +5 및 체력 경험치 +5 정밀 가산!" },
+            { id: "idol", hint: "🎤 매력 7 + 알바 7 이상 조합 완주", name: "🎤 대형 엔터테인먼트 총괄 이사", desc: "소셜 캐피탈과 필드 실무 수완을 엮어 차세대 스타들을 양성합니다.", badge: "🎤 황금 마이더스의 손", effect: "매력 경험치 +5 및 알바 경험치 +5 정밀 가산!" },
+            { id: "agent", hint: "🥷 체력 7 + 알바 7 이상 조합 완주", name: "🥷 첩보 전문 특수 작전 요원", desc: "현장 위장 기술과 피지컬을 결합해 비밀 임무를 뜁니다.", badge: "🥷 특수 기동 작전령", effect: "체력 경험치 +5 및 알바 경험치 +5 정밀 가산!" },
+
             { id: "elite", hint: "🎓 3개 스탯이 동시에 5레벨 이상 도달", name: "🎓 육각형 밸런스 엘리트", desc: "어느 한 곳 흠잡을 데 없는 고품격 육각형 능력치를 구축 한 완벽한 융합 인재입니다.", badge: "🎓 대치동 명예 수석", effect: "지력/매력/체력에 각각 경험치 +2씩 보정!" },
             { id: "lucky", hint: "🍀 백팩에 네잎클로버를 소지한 채 완주", name: "🍀 운명 초월 기적의 로또 주인공", desc: "능력치와 무관하게 평생 편하게 놀고먹는 축복받은 백수 엔딩입니다.", badge: "🍀 신이 내린 로또 행운", effect: "매일 야간 상점에서 복권 하나를 공짜 무상 지급!" },
             { id: "normal", hint: "🛌 특수 엔딩 조건에 모두 미달 시 생존", name: "🛌 스트레스 제로 웰빙 해탈 가이드", desc: "큰 욕심 없이 세상의 억까 속에서 상처 하나 없이 정신 건강을 보존했습니다.", badge: "🛌 소소한 웰빙의 평화", effect: "매일 아침 '당일 소멸성' 기력 +10 영양제 전용 지급!" }
@@ -211,10 +208,10 @@
                     <div>
                         <span style="font-size:11px; font-weight:700; color:#b83280; background:#fff0f6; padding:4px 10px; border-radius:20px;">v20.0 뱃지 경험치 중첩 시스템 빌드</span>
                     </div>
-                    <h1 class="main-title">7일간의<br>인생 역전 시뮬레이터</h1>
+                    <h1 class="main-title">7일간의<br>인생 시뮬레이터</h1>
                     <p style="font-size:12px; color:#666; line-height:1.4;"> 초월자 엔딩에 도전하세요!</p>
                     <div class="menu-btn-group">
-                        <button class="btn-menu btn-menu-start" onclick="showSetupScreen()">🚀 게임 시작하기</button>
+                        <button class="btn-menu btn-menu-start" onclick="showSetupScreen()">🚀 게임 시작</button>
                         <button class="btn-menu btn-menu-book" onclick="showArchiveBook()">📖 엔딩 & 보상 뱃지 도감</button>
                     </div>
                 </div>
@@ -240,7 +237,6 @@
             endingList.forEach(end => {
                 const isUnlocked = localStorage.getItem(`end_lock_${end.id}`) === "true";
                 if (isUnlocked) {
-                    // showArchiveBook 함수 내부의 이 부분을 확인하세요!
                     html += `
                         <div class="ending-card unlocked">
                             <div class="end-name">${end.name} (✓ 보유함)</div>
@@ -652,17 +648,19 @@
                     htmlContent += `<button class="btn btn-train" onclick="doAction('train', ${cost})"><span>🏋️ ${contentSheet.train[levels.str]}</span><span class="badge">기력-${cost}</span></button>`;
                 } else if (type === 'study') {
                     const cost = getAdjustedCost(15);
-                    htmlContent += `<button class="btn btn-study" onclick="doAction('study', ${levels.int >= 10 ? 9 : levels.int}])"><span>📚 ${contentSheet.study[levels.int >= 10 ? 9 : levels.int]}</span><span class="badge">기력-${cost}</span></button>`;
+                    // 💡 doAction의 두 번째 매개변수를 ${cost}로 올바르게 수정했습니다.
+                    htmlContent += `<button class="btn btn-study" onclick="doAction('study', ${cost})"><span>📚 ${contentSheet.study[levels.int >= 10 ? 9 : levels.int]}</span><span class="badge">기력-${cost}</span></button>`;
                 } else if (type === 'hobby') {
                     const cost = getAdjustedCost(15);
-                    htmlContent += `<button class="btn btn-hobby" onclick="doAction('hobby', ${levels.cha >= 10 ? 9 : levels.cha}])"><span>🎨 ${contentSheet.hobby[levels.cha >= 10 ? 9 : levels.cha]}</span><span class="badge">기력-${cost}</span></button>`;
+                    // 💡 doAction의 두 번째 매개변수를 ${cost}로 올바르게 수정했습니다.
+                    htmlContent += `<button class="btn btn-hobby" onclick="doAction('hobby', ${cost})"><span>🎨 ${contentSheet.hobby[levels.cha >= 10 ? 9 : levels.cha]}</span><span class="badge">기력-${cost}</span></button>`;
                 } else if (type === 'rest') {
                     htmlContent += `<button class="btn btn-rest" onclick="doAction('rest', -12)"><span>🛌 낮잠 휴식</span><span class="badge">기력 +12</span></button>`;
                 }
             });
             actionArea.innerHTML = htmlContent;
         }
-
+        
         function openShopMenu() {
             gameMode = "SHOP";
             document.getElementById('display-panel').innerHTML = `
@@ -712,7 +710,7 @@
                     let r = Math.random();
                     if (r < 0.5) logMsg = "😭 복권 개봉: 아쉬운 꽝이었습니다! (0G)";
                     else if (r < 0.85) { gold += 5; logMsg = "🎫 복권 개봉: 아쉬운 소액 당첨입니다. (+5G)"; }
-                    else { gold += 30; logMsg = "🎉 복권 개봉: 기분 좋은 중박 당첨! (+30G)"; }
+                    else { gold += 40; logMsg = "🎉 복권 개봉: 당첨! 축하드립니다 (+40G)"; }
                 }
             }
 
@@ -850,80 +848,88 @@
             
             document.getElementById('display-panel').innerHTML = `<div class="event-title">🚨 DAY 2 돌발: 가상자산 투자 유혹</div><p style="font-size:11px; color:#228be6;">${extra}</p>`;
             document.getElementById('action-area').innerHTML = `
-                <button class="btn btn-event" onclick="selectEventOption('coin-yes')" ${coinLocked ? 'disabled' : ''}><span>${coinLocked ? '🔒 [30G 필요] ' : '🪙 '}친구를 믿고 30G SNOW코인 송금</span></button>
-                <button class="btn btn-event" onclick="selectEventOption('coin-no')"><span>🙅 거절하고 내 갈 길 간다.</span></button>
-                <button class="btn btn-event" onclick="selectEventOption('coin-smart')" ${smartLocked ? 'disabled' : ''}><span>${smartLocked ? '🔒 [지력 2 필요] ' : '💡 '}차트 분석으로 참교육</span></button>
+                <button class="btn btn-event" onclick="selectEventOption('coin-yes')" ${coinLocked ? 'disabled' : ''}><span>${coinLocked ? '🔒 [30G 필요] ' : '🪙 '}친구를 믿고 30G 송금</span></button>
+                <button class="btn btn-event" onclick="selectEventOption('coin-no')"><span>🙅 거절하기</span></button>
+                <button class="btn btn-event" onclick="selectEventOption('coin-smart')" ${smartLocked ? 'disabled' : ''}><span>${smartLocked ? '🔒 [지력 2 필요] ' : '💡 '}직접 차트 분석 하기</span></button>
             `;
+
         }
+
         function triggerDay3Event(extra) {
-            const payLocked = gold < 20; 
-            const winLocked = levels.str < 2; 
-            
+            const payLocked = gold < 20;
+            const winLocked = levels.str < 2;
+
             document.getElementById('display-panel').innerHTML = `<div class="event-title">🚨 DAY 3 돌발: 골목길 취객 무리</div><p style="font-size:11px; color:#228be6;">${extra}</p>`;
             document.getElementById('action-area').innerHTML = `
                 <button class="btn btn-event" onclick="selectEventOption('fight-run')"><span>🏃 전력 도망 (기력-15)</span></button>
                 <button class="btn btn-event" onclick="selectEventOption('fight-pay')" ${payLocked ? 'disabled' : ''}><span>${payLocked ? '🔒 [20G 필요] ' : '💸 '}20G 통행세 지불</span></button>
-                <button class="btn btn-event" onclick="selectEventOption('fight-win')" ${winLocked ? 'disabled' : ''}><span>${winLocked ? '🔒 [체력 2 필요] ' : '👊 '}피지컬로 제압</span></button>
+                <button class="btn btn-event" onclick="selectEventOption('fight-win')" ${winLocked ? 'disabled' : ''}><span>${winLocked ? '🔒 [체력 3 필요] ' : '👊 '}피지컬로 제압</span></button>
             `;
         }
+
         function triggerDay4Event(extra) {
             const epicLocked = levels.cha < 3;
             document.getElementById('display-panel').innerHTML = `<div class="event-title">🚨 DAY 4 돌발: 페스티벌 대타 무대</div><p style="font-size:11px; color:#228be6;">${extra}</p>`;
             document.getElementById('action-area').innerHTML = `
-                <button class="btn btn-event" onclick="selectEventOption('stage-no')"><span>😥 거절하고 잠적</span></button>
+                <button class="btn btn-event" onclick="selectEventOption('stage-no')"><span>😥 거절하고 잠적하기</span></button>
                 <button class="btn btn-event" onclick="selectEventOption('stage-bad')"><span>🎤 흑역사 무대 생성</span></button>
-                <button class="btn btn-event" onclick="selectEventOption('stage-epic')" ${epicLocked ? 'disabled' : ''}><span>${epicLocked ? '🔒 [매력 3 필요] ' : '✨ '}관객 대규모 홀딩</span></button>
+                <button class="btn btn-event" onclick="selectEventOption('stage-epic')" ${epicLocked ? 'disabled' : ''}><span>${epicLocked ? '🔒 [매력 3 필요] ' : '✨ '}멋있게 무대에 서기</span></button>
             `;
         }
+
         function triggerDay5Event(extra) {
-            const castLocked = gold < 50; 
+            const castLocked = gold < 50;
             const smartLocked = levels.int < 4;
-            document.getElementById('display-panel').innerHTML = `<div class="event-title">🚨 DAY 5 돌발: 길거리 기획사 사기단</div><p style="font-size:11px; color:#228be6;">${extra}</p>`;
+            document.getElementById('display-panel').innerHTML = `<div class="event-title">🚨 DAY 5 돌발: 길거리 캐스팅</div><p style="font-size:11px; color:#228be6;">${extra}</p>`;
             document.getElementById('action-area').innerHTML = `
                 <button class="btn btn-event" onclick="selectEventOption('cast-yes')" ${castLocked ? 'disabled' : ''}><span>${castLocked ? '🔒 [50G 필요] ' : '✨ '}계약금 50G 선지급</span></button>
-                <button class="btn btn-event" onclick="selectEventOption('cast-no')"><span>🤨 경멸의 눈빛 퇴장</span></button>
-                <button class="btn btn-event" onclick="selectEventOption('cast-smart')" ${smartLocked ? 'disabled' : ''}><span>${smartLocked ? '🔒 [지력 4 필요] ' : '🕵️ '}사법 규정 조항 설파</span></button>
+                <button class="btn btn-event" onclick="selectEventOption('cast-no')"><span>🏋️ 오디션 보러가기</span></button>
+                <button class="btn btn-event" onclick="selectEventOption('cast-smart')" ${smartLocked ? 'disabled' : ''}><span>${smartLocked ? '🔒 [지력 4 필요] ' : '🕵️ '}계약서부터 보여달라고 하기</span></button>
             `;
         }
+
         function triggerDay6Event(extra) {
             const heroLocked = levels.str < 5;
-            document.getElementById('display-panel').innerHTML = `<div class="event-title">🚨 DAY 6 돌발: 가벽 붕괴 구조 재난</div><p style="font-size:11px; color:#228be6;">${extra}</p>`;
+            document.getElementById('display-panel').innerHTML = `<div class="event-title">🚨 DAY 6 돌발: 가벽 붕괴 재난</div><p style="font-size:11px; color:#228be6;">${extra}</p>`;
             document.getElementById('action-area').innerHTML = `
                 <button class="btn btn-event" onclick="selectEventOption('rescue-watch')"><span>😰 소리쳐서 타인 유도</span></button>
-                <button class="btn btn-event" onclick="selectEventOption('rescue-fail')"><span>🏋️ 무리하다 요추 삐끗</span></button>
+                <button class="btn btn-event" onclick="selectEventOption('rescue-fail')"><span>🏋️ 가벽을 들어보려 노력하기</span></button>
                 <button class="btn btn-event" onclick="selectEventOption('rescue-hero')" ${heroLocked ? 'disabled' : ''}><span>${heroLocked ? '🔒 [체력 5 필요] ' : '🚒 '}초인 파워로 구조</span></button>
             `;
         }
+
         function triggerDay7Event(extra) {
             const godLocked = levels.cha < 5;
             document.getElementById('display-panel').innerHTML = `<div class="event-title">🚨 DAY 7 돌발: 명품 패션쇼 런웨이</div><p style="font-size:11px; color:#228be6;">${extra}</p>`;
             document.getElementById('action-area').innerHTML = `
-                <button class="btn btn-event" onclick="selectEventOption('runway-pass')"><span>🏃 압박감에 도망</span></button>
-                <button class="btn btn-event" onclick="selectEventOption('runway-walk')"><span>🕴️ 목각 뚝딱이 보행</span></button>
+                <button class="btn btn-event" onclick="selectEventOption('runway-pass')"><span>🏃 압박감에 도망가기</span></button>
+                <button class="btn btn-event" onclick="selectEventOption('runway-walk')"><span>🕴️ 뚝딱 거리는 런웨이 도전하기</span></button>
                 <button class="btn btn-event" onclick="selectEventOption('runway-god')" ${godLocked ? 'disabled' : ''}><span>${godLocked ? '🔒 [매력 5 필요] ' : '👑 '}압도적 아우라 독점</span></button>
             `;
         }
 
         function selectEventOption(choice) {
             let resultMsg = "";
+
             if (choice === 'coin-yes') { gold = Math.max(0, gold - 30); resultMsg = "💸 결과: 사기당했습니다. (-30G)"; }
             else if (choice === 'coin-no') { resultMsg = addItemExp('int', 2); }
-            else if (choice === 'coin-smart') { gold += 60; resultMsg = "😎 결과: 합의금 명목으로 갈취! (+60G)"; }
+            else if (choice === 'coin-smart') { gold += 60; resultMsg = "😎 결과: 직접 투자한 종목이 매우 올랐습니다. (+60G)"; }
             else if (choice === 'fight-run') { currentEnergy = Math.max(0, currentEnergy - 15); resultMsg = "🏃 결과: 사력의 도망 완료. (기력 -15)"; }
             else if (choice === 'fight-pay') { gold = Math.max(0, gold - 20); resultMsg = "💸 결과: 삥을 뜯겼습니다. (-20G)"; }
             else if (choice === 'fight-win') { resultMsg = addItemExp('job', 2); }
-            else if (choice === 'stage-no') { resultMsg = "🧘 결과: 평온한 관람객 포지션 유지."; }
-            else if (choice === 'stage-bad') { currentExp.cha = 0; resultMsg = "😭 결과: 인터넷 흑역사 박제 (매력 경험치 초기화)"; }
+            else if (choice === 'stage-no') { gold = Math.max(0, gold - 20); resultMsg = "🧘 결과: 잠적을 해 고소를 당했습니다.. 합의금으로 20골드를 냈습니다. (-20G)"; }
+            else if (choice === 'stage-bad') { currentEnergy = Math.max(0, currentEnergy - 20); resultMsg = "😭 결과: 흑역사가 인터넷에 박제되었습니다. 수치심에 기력이 -20 닳았습니다.. (기력 -20)"; }
             else if (choice === 'stage-epic') { gold += 100; resultMsg = "🎤 결과: 현장 위로금 수령! (+100G)"; }
             else if (choice === 'cast-yes') { gold = Math.max(0, gold - 50); resultMsg = "😭 결과: 위장 유령 계약 사기단이었습니다. (-50G)"; }
-            else if (choice === 'cast-no') { resultMsg = "🚪 결과: 완벽 필터링 통과."; }
+            else if (choice === 'cast-no') { currentEnergy = Math.max(0, currentEnergy - 20); resultMsg = "😭 결과: 열심히 봤던 오디션이 가짜였습니다. 기력이 -20 닳았습니다.. (기력 -20)"; }
             else if (choice === 'cast-smart') { resultMsg = addItemExp('int', 4); }
             else if (choice === 'rescue-watch') { resultMsg = "🚪 결과: 구조대 안전 조치 완료."; }
             else if (choice === 'rescue-fail') { currentEnergy = Math.max(0, currentEnergy - 30); resultMsg = "🚑 결과: 척추 내상 발생 (기력 -30)"; }
             else if (choice === 'rescue-hero') { gold += 120; resultMsg = "🚒 결과: 시민 포상금 정산 완료! (+120G)"; }
-            else if (choice === 'runway-pass') { resultMsg = "🧘 결과: 평화 가치 보존."; }
-            else if (choice === 'runway-walk') { gold += 20; resultMsg = "🕴️ 결과: 뚝딱이 챌린지 밈 바이럴 정산. (+20G)"; }
+            else if (choice === 'runway-pass') { gold = Math.max(0, gold - 30); resultMsg = "🧘 결과: 정해진 쇼에서 도망을 가 고소를 당했습니다.. 합의금으로 30골드를 냈습니다. (-30G)"; }
+            else if (choice === 'runway-walk') { gold += 50; resultMsg = "🕴️ 결과: 뚝딱이 챌린지 밈 바이럴 정산. (+50G)"; }
             else if (choice === 'runway-god') {
+
                 /* 🚨 오류 예외 처리 완료: 보상 획득 시 9레벨 만렙 상한 절대 초과 불가능 고정 */
                 levels.int = Math.min(9, levels.int + 1);
                 levels.cha = Math.min(9, levels.cha + 1);
