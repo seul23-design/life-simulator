@@ -83,7 +83,7 @@
         .btn-system { background-color: #212529; color: white; grid-column: span 2; padding: 14px; font-size: 14px; border-radius: 12px; border: none; cursor: pointer; }
         .btn-shop-toggle { background-color: #fff4e6; color: #d9480f; border: 1px solid #ffd8a8; grid-column: span 2; padding: 14px; font-size: 13px; cursor: pointer; border-radius: 12px; font-weight: 700; }
         
-        /* 🚨 중요: 조건 미달로 선택 불가능한 버튼을 짙은 회색으로 덮어버리는 마스터 스타일 */
+        /* 🚨 핵심 디자인: 선택 불가한 버튼을 짙은 회색으로 변경하고 마우스 클릭 및 포인터를 완전 봉쇄 */
         .btn-event { background-color: #ffffff; color: #495057; border: 1px solid #ced4da; text-align: left; align-items: flex-start; width: 100%; cursor: pointer; border-radius: 12px; padding: 12px; transition: all 0.1s; }
         .btn-event:disabled, .btn:disabled { background-color: #868e96 !important; color: #dee2e6 !important; border-color: #495057 !important; cursor: not-allowed !important; transform: none !important; opacity: 0.85; box-shadow: none; pointer-events: none; }
 
@@ -201,7 +201,7 @@
             document.getElementById('game-container').innerHTML = `
                 <div class="title-screen">
                     <div>
-                        <span style="font-size:11px; font-weight:700; color:#b83280; background:#fff0f6; padding:4px 10px; border-radius:20px;">v19.7 비활성화 오류 픽스</span>
+                        <span style="font-size:11px; font-weight:700; color:#b83280; background:#fff0f6; padding:4px 10px; border-radius:20px;">v19.8 오타 완벽 수동 픽스</span>
                     </div>
                     <h1 class="main-title">7일간의<br>인생 역전 시뮬레이터</h1>
                     <p style="font-size:12px; color:#666; line-height:1.4;">조건 미달 및 자금 부족 선택지가 직관적인 짙은 회색으로 완전히 차단됩니다.</p>
@@ -661,7 +661,7 @@
                 logMsg = `🎒 [${findItem.name}]을 수령하여 가방에 보관했습니다. (낮에 클릭해 복용 가능)`;
             } else {
                 if (id === 'book') logMsg = addItemExp('int', 3);
-                else if (id === 'vitamin') logMsg = "../../html" logMsg = addItemExp('str', 3);
+                else if (id === 'vitamin') logMsg = addItemExp('str', 3);
                 else if (id === 'ampoule') logMsg = addItemExp('cha', 3);
                 else if (id === 'guidebook') logMsg = addItemExp('job', 3);
                 else if (id === 'clover') { inventory.push("🍀 네잎클로버"); logMsg = `🍀 [네잎클로버] 특수 엔딩용 행운 기물이 영구 가산되었습니다.`; }
@@ -801,10 +801,10 @@
             else if (day === 7) triggerDay7Event(morningAlert);
         }
 
-        /* 🚨 [오류 대수정 구역]: 능력치 제한은 물론, 30G/50G 등 자금 부족 시 완벽한 disabled(마우스 락) 및 짙은 회색 처리 */
+        /* 🚨 [돌발 상황 제어장치]: 보유 자금 및 조건 미달 시 완벽한 짙은 회색 및 클릭 완전 차단(disabled) 적용 */
         function triggerDay2Event(extra) {
-            const coinLocked = gold < 30; // 30골드 체크
-            const smartLocked = levels.int < 2; // 지력 체크
+            const coinLocked = gold < 30; 
+            const smartLocked = levels.int < 2; 
             
             document.getElementById('display-panel').innerHTML = `<div class="event-title">🚨 DAY 2 돌발: 가상자산 투자 유혹</div><p style="font-size:11px; color:#228be6;">${extra}</p>`;
             document.getElementById('action-area').innerHTML = `
@@ -814,8 +814,8 @@
             `;
         }
         function triggerDay3Event(extra) {
-            const payLocked = gold < 20; // 20골드 체크
-            const winLocked = levels.str < 2; // 체력 체크
+            const payLocked = gold < 20; 
+            const winLocked = levels.str < 2; 
             
             document.getElementById('display-panel').innerHTML = `<div class="event-title">🚨 DAY 3 돌발: 골목길 취객 무리</div><p style="font-size:11px; color:#228be6;">${extra}</p>`;
             document.getElementById('action-area').innerHTML = `
@@ -834,7 +834,7 @@
             `;
         }
         function triggerDay5Event(extra) {
-            const castLocked = gold < 50; // 50골드 체크
+            const castLocked = gold < 50; 
             const smartLocked = levels.int < 4;
             document.getElementById('display-panel').innerHTML = `<div class="event-title">🚨 DAY 5 돌발: 길거리 기획사 사기단</div><p style="font-size:11px; color:#228be6;">${extra}</p>`;
             document.getElementById('action-area').innerHTML = `
@@ -870,7 +870,7 @@
             else if (choice === 'fight-run') { currentEnergy = Math.max(0, currentEnergy - 15); resultMsg = "🏃 결과: 사력의 도망 완료. (기력 -15)"; }
             else if (choice === 'fight-pay') { gold = Math.max(0, gold - 20); resultMsg = "💸 결과: 삥을 뜯겼습니다. (-20G)"; }
             else if (choice === 'fight-win') { resultMsg = addItemExp('job', 2); }
-            else if (choice === 'stage-no') { resultMsg = "🧘 결과: 평온한 관람객 포지션 유지"; }
+            else if (choice === 'stage-no') { resultMsg = "🧘 결과: 평온한 관람객 포지션 유지."; }
             else if (choice === 'stage-bad') { currentExp.cha = 0; resultMsg = "😭 결과: 인터넷 흑역사 박제 (매력 경험치 초기화)"; }
             else if (choice === 'stage-epic') { gold += 100; resultMsg = "🎤 결과: 현장 위로금 수령! (+100G)"; }
             else if (choice === 'cast-yes') { gold = Math.max(0, gold - 50); resultMsg = "😭 결과: 위장 유령 계약 사기단이었습니다. (-50G)"; }
@@ -938,7 +938,7 @@
 
         function resetToTitle() {
             day = 1; gold = 0; currentEnergy = 100; currentTurn = maxTurn; faintCount = 0;
-            levels = { int: 0, chains: 0, str: 0, job: 0 }; currentExp = { int: 0, cha: 0, str: 0, job: 0 };
+            levels = { int: 0, cha: 0, str: 0, job: 0 }; currentExp = { int: 0, cha: 0, str: 0, job: 0 };
             currentTurnChoices = []; inventory = []; boughtItemsToday = []; selectedBadges = [];
             showTitleScreen();
         }
@@ -957,7 +957,7 @@
                 let decodedArr = JSON.parse(atob(code.trim()));
                 if (Array.isArray(decodedArr)) {
                     decodedArr.forEach(id => { localStorage.setItem(`end_lock_${id}`, "true"); });
-                    alert("🎉 도감 및 보상 뱃지가 동기화되었습니다!");
+                    alert("🎉 도감 및 보상 뱃지가 완벽히 동기화되었습니다!");
                     showArchiveBook();
                 }
             } catch(e) { alert("파싱 실패"); }
