@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>7일간의 인생 역전 시뮬레이터 - 웰빙 리워크</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', -apple-system, system-ui, sans-serif; }
+        body { background-color: #f0f2f5; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        
+        .game-container { background-color: #ffffff; width: 100%; max-width: 500px; border-radius: 24px; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08); padding: 24px; display: flex; flex-direction: column; gap: 16px; position: relative; }
+        .title-screen { text-align: center; padding: 20px 10px; display: flex; flex-direction: column; gap: 20px; }
+        .main-title { font-size: 26px; font-weight: 900; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.3; }
+        .menu-btn-group { display: flex; flex-direction: column; gap: 12px; }
+        
+        .btn-menu { padding: 16px; font-size: 15px; font-weight: 700; border: none; border-radius: 14px; cursor: pointer; transition: transform 0.1s; }
+        .btn-menu:active { transform: scale(0.98); }
+        .btn-menu-start { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .btn-menu-book { background: #e9ecef; color: #495057; border: 1px solid #dee2e6; }
+
+        .book-screen { display: flex; flex-direction: column; gap: 14px; max-height: 80vh; overflow-y: auto; padding-right: 6px; }
+        .book-title { font-size: 20px; font-weight: 800; color: #333; text-align: center; margin-bottom: 5px; }
+        .ending-card { background: #f8f9fa; border: 2px solid #e9ecef; border-radius: 12px; padding: 12px 16px; display: flex; flex-direction: column; gap: 6px; }
+        .ending-card.unlocked { border-color: #b197fc; background: #f3f0ff; }
+        .ending-card .end-name { font-size: 14px; font-weight: 700; color: #868e96; }
+        .ending-card.unlocked .end-name { color: #5f3dc4; font-size: 15px; }
+        .ending-card .end-desc { font-size: 12px; color: #adb5bd; line-height: 1.4; }
+        .ending-card.unlocked .end-desc { color: #495057; }
+        
+        .badge-reward-info { font-size: 11px; font-weight: 700; color: #d9480f; background: #fff4e6; padding: 3px 8px; border-radius: 6px; display: inline-block; margin-top: 4px; }
+
+        .badge-select-zone { background: #f8f9fa; border: 2px dashed #ced4da; border-radius: 14px; padding: 12px; text-align: left; }
+        .badge-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px; max-height: 180px; overflow-y: auto; padding-right: 4px; }
+        .badge-item { background: white; border: 1px solid #dee2e6; border-radius: 10px; padding: 8px; font-size: 12px; font-weight: 600; cursor: pointer; text-align: left; transition: all 0.1s; display: flex; flex-direction: column; gap: 2px; }
+        .badge-item.selected { border-color: #74c0fc; background-color: #e8f4ff; color: #1c7ed6; box-shadow: inset 0 0 0 1px #1c7ed6; }
+        .badge-item.locked { background: #f1f3f5; color: #adb5bd; cursor: not-allowed; border-style: dotted; }
+
+        .ending-illustration { width: 100%; height: 140px; border-radius: 12px; background: #212529; display: flex; justify-content: center; align-items: center; overflow: hidden; margin-top: 6px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); }
+        .backup-control-panel { background: #f1f3f5; border-radius: 14px; padding: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .btn-backup { padding: 10px; font-size: 11px; font-weight: 700; border: 1px solid #ced4da; border-radius: 8px; cursor: pointer; background: white; color: #495057; }
+
+        .setup-screen { display: flex; flex-direction: column; gap: 16px; text-align: center; padding: 5px; }
+        .setup-title { font-size: 20px; font-weight: 800; color: #764ba2; }
+        .input-group { display: flex; flex-direction: column; gap: 6px; text-align: left; }
+        .input-text { width: 100%; padding: 12px; border: 2px solid #e9ecef; border-radius: 12px; font-size: 14px; outline: none; }
+        .gender-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .gender-btn { padding: 12px; border: 2px solid #e9ecef; background: white; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; }
+        .gender-btn.selected-male { border-color: #1c7ed6; background-color: #e8f4ff; color: #1c7ed6; }
+        .gender-btn.selected-female { border-color: #d6336c; background-color: #fff0f6; color: #d6336c; }
+        .btn-start { padding: 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; }
+
+        .status-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 18px; border-radius: 20px; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .profile-badge, .calendar-badge, .turn-badge { font-size: 13px; font-weight: 700; background: rgba(255, 255, 255, 0.2); padding: 4px 10px; border-radius: 20px; }
+        .turn-badge { background: rgba(255, 62, 98, 0.3); border: 1px solid rgba(255,255,255,0.2); }
+        .energy-bar-container { background: rgba(255, 255, 255, 0.3); height: 10px; border-radius: 5px; margin-top: 5px; overflow: hidden; }
+        .energy-bar { background: #ff5e62; height: 100%; width: 100%; transition: width 0.3s; }
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 12px; background: rgba(255, 255, 255, 0.12); padding: 8px; border-radius: 12px; font-size: 12px; }
+
+        .active-badges-row { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+        .active-badge-pill { font-size: 10px; font-weight: 700; background: rgba(255,255,255,0.25); color: white; padding: 2px 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); }
+
+        .inventory-panel { background: #f1f3f5; border-radius: 12px; padding: 10px 14px; font-size: 13px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .item-chip { background: #ffffff; border: 1px solid #dee2e6; padding: 5px 10px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 12px; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.03); transition: all 0.1s; }
+        .item-chip:hover { background: #fff4e6; border-color: #ffd8a8; transform: translateY(-1px); }
+
+        /* 웰빙 전용 일일 아이템 강조용 */
+        .item-chip.wellbeing-happy { background: #fff0f6; border: 1px dashed #h75191; color: #d6336c; font-weight: 800; animation: bounce 1s infinite alternate; }
+
+        .display-panel { background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 16px; padding: 16px; min-height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        .log-text { font-size: 14px; color: #495057; line-height: 1.5; }
+        .levelup-text { color: #228be6; font-weight: 800; font-size: 13px; margin-top: 4px; background: #e8f4ff; padding: 2px 8px; border-radius: 6px; display: block; }
+        .event-title { font-size: 16px; font-weight: 700; color: #d6336c; margin-bottom: 6px; }
+        .shop-title { font-size: 16px; font-weight: 700; color: #f08c00; margin-bottom: 6px; }
+
+        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn { padding: 12px; border: none; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .btn-work { background-color: #e8f4ff; color: #1c7ed6; }
+        .btn-train { background-color: #fff0f6; color: #d6336c; }
+        .btn-study { background-color: #e6fcf5; color: #0ca678; }
+        .btn-hobby { background-color: #f3f0ff; color: #7048e8; }
+        .btn-rest { background-color: #fff9db; color: #f08000; }
+        
+        .btn-system { background-color: #212529; color: white; grid-column: span 2; padding: 14px; font-size: 14px; border-radius: 12px; border: none; cursor: pointer; }
+        .btn-shop-toggle { background-color: #fff4e6; color: #d9480f; border: 1px solid #ffd8a8; grid-column: span 2; padding: 14px; font-size: 13px; cursor: pointer; border-radius: 12px; font-weight: 700; }
+        .btn-event { background-color: #ffffff; color: #495057; border: 1px solid #ced4da; text-align: left; align-items: flex-start; width: 100%; cursor: pointer; border-radius: 12px; padding: 12px; }
+
+        /* 모달 팝업 레이아웃 스타일 */
+        .wellbeing-modal-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); border-radius:24px; display:flex; justify-content:center; align-items:center; z-index:999; }
+        .wellbeing-modal-box { background: white; width:85%; max-width:380px; border-radius:18px; padding:22px; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,0.15); display:flex; flex-direction:column; gap:12px; transform: scale(0.9); animation: modalPop 0.25s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .modal-badge-icon { font-size:40px; margin-bottom: 2px; }
+        .modal-headline { font-size:16px; font-weight:800; color:#b83280; }
+        .modal-subtext { font-size:12px; color:#555; line-height:1.5; background:#fff0f6; padding:10px; border-radius:10px; border:1px solid #ffdeeb; }
+        .btn-modal-close { background:#d6336c; color:white; border:none; padding:12px; font-size:13px; font-weight:700; border-radius:10px; cursor:pointer; margin-top:4px; }
+
+        @keyframes modalPop { to { transform: scale(1); } }
+        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-2px); } }
+    </style>
+</head>
+<body>
+
+    <div class="game-container" id="game-container"></div>
+
+    <script>
+        let playerName = "주인공";
+        let playerGender = "남성";
+        let day = 1;
+        const dayNames = ["", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"];
+        
+        let gold = 0;
+        let currentEnergy = 100;
+        const maxEnergy = 100;
+        let currentTurn = 12;
+        const maxTurn = 12;
+
+        let levels = { int: 0, cha: 0, str: 0, job: 0 };
+        let currentExp = { int: 0, cha: 0, str: 0, job: 0 };
+
+        let currentTurnChoices = [];
+        let gameMode = "TITLE";
+
+        let inventory = [];
+        let boughtItemsToday = []; 
+        let currentShopItems = []; 
+        let faintCount = 0;
+        
+        let selectedBadges = [];
+
+        const itemDatabase = [
+            { id: 'coffee', name: '☕ 에스프레소', price: 15, desc: '기력 +25 회복', type: 'use' },
+            { id: 'monster', name: '🔋 몬스터 드링크', price: 25, desc: '기력 +50 회복', type: 'use' },
+            { id: 'book', name: '📘 기적의 족보집', price: 30, desc: '지력 경험치 +3 가산', type: 'instant' },
+            { id: 'vitamin', name: '💊 산삼 비타민', price: 30, desc: '체력 경험치 +3 가산', type: 'instant' },
+            { id: 'ampoule', name: '✨ 연예인 앰플', price: 30, desc: '매력 경험치 +3 가산', type: 'instant' },
+            { id: 'guidebook', name: '💼 알바 가이드', price: 25, desc: '알바 경험치 +3 가산', type: 'instant' },
+            { id: 'lotto', name: '🎫 한탕 복권', price: 10, desc: '당첨금 0G / 5G / 30G 랜덤', type: 'instant' },
+            { id: 'clover', name: '🍀 네잎클로버', price: 40, desc: '특별 엔딩 트리거 기물', type: 'passive' }
+        ];
+
+        const contentSheet = {
+            work: [
+                { name: "🧻 길거리 전단지", income: 5 }, { name: "🏪 편의점 야간조", income: 10 },
+                { name: "☕ 주말 바리스타", income: 15 }, { name: "🍽️ 뷔페 주방 헬퍼", income: 20 },
+                { name: "📚 학원 채점 조교", income: 25 }, { name: "🏢 중소기업 사무보조", income: 30 },
+                { name: "💻 스타트업 외주", income: 35 }, { name: "🤵 VIP 연회 의전", income: 40 },
+                { name: "🧪 임상시험 참여", income: 45 }, { name: "💎 대기업 핵심 인턴", income: 50 }
+            ],
+            train: ["🏃 가벼운 조깅", "🏋️ 헬스장 등록", "🔥 크로스핏 와드", "🧘 기구 필라테스", "🥊 정통 복싱 스파링", "🧗 실내 클라이밍", "🌊 새벽 실내 수영", "🪂 지옥의 서킷", "⛰️ 야간 산악 종주", "⚡ 신체 한계 개방"],
+            study: ["🔢 초등 셈틀 수학", "📺 EBS 스타강사 인강", "📚 전공 서적 밤샘", "📝 자격증 기출 풀이", "🗣️ 원어민 프리토킹", "📊 딥러닝 부트캠프", "🔬 학술지 심화 논문", "💡 특허 아이디어 출원", "🎓 석학 미팅 참석", "🧠 상대성 영역 도전"],
+            hobby: ["🪞 거울 나만의 패션쇼", "🧴 올인원 피부 관리", "🎤 코노 보컬 트레이닝", "🕺 방송 댄스 클래스", "📸 OOTD 인스타 피드", "👗 디자이너 브랜드 착장", "💄 메이크업 스타일링", "🥂 인플루언서 파티", "📸 잡지 메인 커버 촬영", "✨ 레드카펫 입장"]
+        };
+
+        const endingIllustrations = {
+            god: `<svg width="80" height="80" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#ffd700"/><path d="M12 6L14 10H18L15 13L16 17L12 15L8 17L9 13L6 10H10L12 6Z" fill="#fff"/></svg>`,
+            asset: `<svg width="80" height="80" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" fill="#2b2d42"/><circle cx="12" cy="12" r="7" fill="#ecc94b"/><text x="9.5" y="16" fill="#fff" font-weight="bold" font-size="12">$</text></svg>`,
+            exhaust: `<svg width="80" height="80" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" fill="#4a5568"/><path d="M6 18L18 6M6 6l12 12" stroke="#e53e3e" stroke-width="3"/></svg>`,
+            scholar: `<svg width="80" height="80" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" fill="#3182ce"/><path d="M4 6h16v12H4z" fill="#fff"/><path d="M4 9h16M12 6v12" stroke="#3182ce" stroke-width="2"/></svg>`,
+            celeb: `<svg width="80" height="80" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" fill="#d53f8c"/><path d="M12 2l3 6 7 1-5 5 1 7-6-4-6 4 1-7-5-5 7-1z" fill="#fff"/></svg>`,
+            physical: `<svg width="80" height="80" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" fill="#319795"/><path d="M6 12h12M6 9v6M18 9v6" stroke="#fff" stroke-width="3"/></svg>`,
+            ceo: `<svg width="80" height="80" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" fill="#2c5282"/><path d="M4 10h16v10H4z" fill="#fff"/><path d="M10 6h4v4h-4z" fill="#fff"/></svg>`,
+            cyborg: `<svg width="80" height="80" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" fill="#1a202c"/><circle cx="12" cy="12" r="6" fill="#4a5568" stroke="#00e5ff" stroke-width="2"/></svg>`,
+            politician: `<svg width="80" height="80" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" fill="#2b6cb0"/><path d="M12 3L4 9v11h16V9z" fill="#fff"/></svg>`,
+            strategist: `<svg width="80" height="80" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" fill="#2f855a"/><path d="M4 18l6-6 4 4 6-10" stroke="#fff" stroke-width="3" fill="none"/></svg>`,
+            model: `<svg width="80" height="80" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" fill="#b83280"/><circle cx="12" cy="8" r="4" fill="#fff"/><path d="M6 20v-4l6-3 6 3v4z" fill="#fff"/></svg>`,
+            idol: `<svg width="80" height="80" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" fill="#805ad5"/><circle cx="12" cy="10" r="5" fill="#fff"/><path d="M12 15v5" stroke="#fff" stroke-width="2"/></svg>`,
+            agent: `<svg width="80" height="80" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" fill="#1a202c"/><path d="M8 8h8v4H8z" fill="#e53e3e"/><circle cx="12" cy="15" r="2" fill="#fff"/></svg>`,
+            elite: `<svg width="80" height="80" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" fill="#dd6b20"/><polygon points="12,2 22,9 12,16 2,9" fill="#fff"/></svg>`,
+            lucky: `<svg width="80" height="80" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" fill="#38a169"/><path d="M12 4c-2-2-5 0-5 3s3 5 5 7c2-2 5-4 5-7s-3-5-5-3z" fill="#fff"/></svg>`,
+            normal: `<svg width="80" height="80" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" fill="#718096"/><circle cx="12" cy="12" r="5" fill="#fff"/></svg>`
+        };
+
+        const endingList = [
+            { id: "god", hint: "👑 모든 능력치 9레벨 만렙 도달", name: "👑 신 인류의 탄생", desc: "지력, 매력, 체력, 자본을 완벽히 동기화한 마스터 가이드의 탄생입니다.", badge: "👑 초월자의 패시브", effect: "모든 기본 능력치 Lv.2 상태로 파격 스타트!" },
+            { id: "asset", hint: "💰 최종 보유 자금 200G 이상 완주", name: "💰 황금 제국의 지배자", desc: "압도적인 유동 자산을 확보하여 월스트리트를 뒤흔드는 자본 자산가입니다.", badge: "💰 다이아몬드 수저", effect: "초기 보유 자금 +80G 상태로 여유롭게 스타트!" },
+            { id: "exhaust", hint: "🏥 기력 부족 강제 기절 3회 이상", name: "🏥 만성 과로사 증후군", desc: "스케줄 연산 실패로 몸이 완전히 망가진 채 침대 신세를 지게 된 파멸의 워커홀릭입니다.", badge: "🏥 영혼의 바퀴벌레", effect: "체력 레벨 3단계 선행 스타트! (행동 비용 감소 효과)" },
+            { id: "scholar", hint: "🔬 지력 스탯 단독 9레벨 만렙 달성", name: "🔬 인류 지성을 뒤흔든 석학", desc: "사기꾼 무리를 완벽한 논리로 분쇄한 인공지능 수석 아키텍트입니다.", badge: "🧠 아인슈타인의 뇌", effect: "지력 레벨 3단계 선행 스타트! (고급 탐색 개방)" },
+            { id: "celeb", hint: "💎 매력 스탯 단독 9레벨 만렙 달성", name: "💎 시대를 리드하는 글로벌 탑 셀럽", desc: "숨만 쉬어도 바이럴 유행을 만드는 세계 최고의 패션 워너비입니다.", badge: "✨ 천만 아우라 조명", effect: "매력 레벨 3단계 선행 스타트! (상위 사교 개방)" },
+            { id: "physical", hint: "🏋️ 체력 스탯 단독 9레벨 만렙 달성", name: "🏋️ 신체 기믹 완전 개방 철인", desc: "올림픽 명예의 전당 프리패스급 인재. 재난 속에서 빛나는 괴력입니다.", badge: "💪 고농축 에르핀 근육", effect: "체력 레벨 3단계 선행 스타트!" },
+            { id: "ceo", hint: "💼 알바 스탯 단독 9레벨 만렙 달성", name: "💼 글로벌 프랜차이즈 연합 의장", desc: "알바 수완에서 시작해 국가 경제 구조의 유통망 네트워크를 삼켰습니다.", badge: "💼 백종원급 수완가", effect: "알바 레벨 3단계 선행 스타트! (초반 급여 가산)" },
+            { id: "cyborg", hint: "🤖 지력 7 + 체력 7 이상 조합 완주", name: "🤖 사이보그 마스터 마인드", desc: "지치지 않는 뇌 연산 장치와 강인한 심장을 장착한 테크 진화학 선두입니다.", badge: "🤖 안드로이드 연산력", effect: "지력 Lv.2 및 체력 Lv.2 선행 합산 스타트!" },
+            { id: "politician", hint: "🏛️ 지력 7 + 매력 7 이상 조합 완주", name: "🏛️ 국가 공인 천재 정치가", desc: "천재적인 미사여구 대중을 매료시키는 눈빛으로 법령을 쥐고 흔듭니다.", badge: "🏛️ 여론 통제 마스터", effect: "지력 Lv.2 및 매력 Lv.2 선행 합산 스타트!" },
+            { id: "strategist", hint: "📈 지력 7 + 알바 7 이상 조합 완주", name: "📈 자본주의 흑막 마켓 메이커", desc: "알바 실전 생리와 고등 통계를 엮어 거대 작전 헤지펀드를 통제합니다.", badge: "📈 작전 세력 탭", effect: "지력 Lv.2 및 알바 Lv.2 선행 합산 스타트!" },
+            { id: "model", hint: "📸 매력 7 + 체력 7 이상 조합 완주", name: "📸 밀라노 런웨이를 찢은 보디", desc: "다져진 조각 보디와 눈부신 아우라로 전 세계 패션 잡지를 독점합니다.", badge: "📸 인간 마네킹 아우라", effect: "매력 Lv.2 및 체력 Lv.2 선행 합산 스타트!" },
+            { id: "idol", hint: "🎤 매력 7 + 알바 7 이상 조합 완주", name: "🎤 메가 엔터테인먼트 총괄 이사", desc: "소셜 캐피탈과 필드 실무 수완을 엮어 차세대 스타들을 양성합니다.", badge: "🎤 황금 마이더스의 손", effect: "매력 Lv.2 및 알바 Lv.2 선행 합산 스타트!" },
+            { id: "agent", hint: "🥷 체력 7 + 알바 7 이상 조합 완주", name: "🥷 첩보 전문 특수 작전 요원", desc: "현장 위장 기술과 은밀한 기동 피지컬을 결합해 비밀 임무를 뜁니다.", badge: "🥷 특수 기동 작전령", effect: "체력 Lv.2 및 알바 Lv.2 선행 합산 스타트!" },
+            { id: "elite", hint: "🎓 3개 스탯이 동시에 5레벨 이상 도달", name: "🎓 육각형 밸런스 엘리트", desc: "어느 한 곳 흠잡을 데 없는 고품격 육각형 능력치를 구축한 완벽한 융합 인재입니다.", badge: "🎓 대치동 명예 수석", effect: "지력/매력/체력 전원 1레벨씩 선행 보정!" },
+            { id: "lucky", hint: "🍀 백팩에 네잎클로버를 소지한 채 완주", name: "🍀 운명 초월 기적의 로또 주인공", desc: "능력치와 무관하게 평생 편하게 놀고먹는 축복받은 백수 엔딩입니다.", badge: "🍀 신이 내린 로또 행운", effect: "매일 야간 상점에서 복권 하나를 공짜 무상 지급!" },
+            { id: "normal", hint: "🛌 특수 엔딩 조건에 모두 미달 시 생존", name: "🛌 스트레스 제로 웰빙 해탈 가이드", desc: "큰 욕심 없이 세상의 억까 속에서 상처 하나 없이 정신 건강을 보존했습니다.", badge: "🛌 소소한 웰빙의 평화", effect: "매일 아침 '당일 소멸성' 기력 +10 영양제 전용 지급!" }
+        ];
+
+        window.onload = function() { showTitleScreen(); };
+
+        function showTitleScreen() {
+            gameMode = "TITLE";
+            document.getElementById('game-container').innerHTML = `
+                <div class="title-screen">
+                    <div>
+                        <span style="font-size:11px; font-weight:700; color:#b83280; background:#fff0f6; padding:4px 10px; border-radius:20px;">v19.2 WELLBEING REWORK</span>
+                    </div>
+                    <h1 class="main-title">7일간의<br>인생 역전 시뮬레이터</h1>
+                    <p style="font-size:12px; color:#666; line-height:1.4;">[리워크 완료] 웰빙 뱃지가 매일 아침 <b>'소소한 행복 영양제'</b>를 소출합니다.<br>이 영양제는 오늘 쓰지 않으면 밤샘 침대 정산 시 강제 소멸합니다.</p>
+                    <div class="menu-btn-group">
+                        <button class="btn-menu btn-menu-start" onclick="showSetupScreen()">🚀 캐릭터 설계 및 뱃지 설정</button>
+                        <button class="btn-menu btn-menu-book" onclick="showArchiveBook()">📖 엔딩 & 보상 뱃지 도감</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getRequiredExp(level) { 
+            if (level >= 9) return Infinity;
+            if (level >= 5) return 6; 
+            return level + 2; 
+        }
+
+        function showArchiveBook() {
+            let html = `<div class="book-screen"><h2 class="book-title">🗂️ 엔딩 컬렉션 & 뱃지 리포트</h2><p style="font-size:11px; text-align:center; color:#868e96; margin-bottom:5px;">엔딩 잠금 해제 시 전용 '영구 정착 버프 뱃지'가 배포됩니다.</p>`;
+            endingList.forEach(end => {
+                const isUnlocked = localStorage.getItem(`end_lock_${end.id}`) === "true";
+                if (isUnlocked) {
+                    html += `
+                        <div class="ending-card unlocked">
+                            <div class="end-name">${end.name} (✓ 보유함)</div>
+                            <div class="end-desc">${end.desc}</div>
+                            <div class="badge-reward-info">🏅 획득 보상 뱃지: [${end.badge}] $\rightarrow$ ${end.effect}</div>
+                            <div class="ending-illustration">${endingIllustrations[end.id]}</div>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="ending-card">
+                            <div class="end-name">❓ 미확보 엔딩 카드</div>
+                            <div class="end-desc" style="color:#fa5252; font-weight:600;">조건: ${end.hint}</div>
+                            <div style="font-size:11px; color:#adb5bd;">🔒 해제 시 보상: [${end.badge}]</div>
+                        </div>
+                    `;
+                }
+            });
+            
+            html += `
+                <div class="backup-control-panel">
+                    <button class="btn-backup" onclick="exportArchiveCode()">💾 기록 내보내기</button>
+                    <button class="btn-backup" onclick="importArchiveCode()">📥 기록 가져오기</button>
+                </div>
+                <button class="btn-system" style="margin-top:5px;" onclick="showTitleScreen()">🔙 타이틀 메인 화면으로</button>
+            </div>`;
+            document.getElementById('game-container').innerHTML = html;
+        }
+
+        function showSetupScreen() {
+            gameMode = "SETUP";
+            selectedBadges = [];
+
+            let html = `
+                <div class="setup-screen">
+                    <h1 class="setup-title">🧬 스타팅 룸 & 뱃지 장착</h1>
+                    <div class="input-group">
+                        <label style="font-size:12px; font-weight:700;">인물명 설정</label>
+                        <input type="text" id="player-name" class="input-text" value="${playerName}">
+                    </div>
+                    <div class="input-group">
+                        <label style="font-size:12px; font-weight:700;">성별 설정</label>
+                        <div class="gender-selector">
+                            <button type="button" class="gender-btn ${playerGender==='남성'?'selected-male':''}" id="gender-m" onclick="selectGender('남성')">🙋‍♂️ 남성</button>
+                            <button type="button" class="gender-btn ${playerGender==='여성'?'selected-female':''}" id="gender-f" onclick="selectGender('여성')">🙋‍♀️ 여성</button>
+                        </div>
+                    </div>
+                    
+                    <div class="badge-select-zone">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <label style="font-size:13px; font-weight:800; color:#5f3dc4;">🏅 보상 뱃지 세팅 (최대 3개)</label>
+                            <span style="font-size:11px; font-weight:700; color:#228be6;" id="badge-count-text">선택: 0 / 3</span>
+                        </div>
+                        <div class="badge-grid" id="badge-setup-grid">`;
+
+            endingList.forEach(end => {
+                const isUnlocked = localStorage.getItem(`end_lock_${end.id}`) === "true";
+                if (isUnlocked) {
+                    html += `
+                        <div class="badge-item" id="badge-item-${end.id}" onclick="toggleBadgeSelect('${end.id}')">
+                            <span style="color:#d9480f; font-weight:700;">🏅 ${end.badge}</span>
+                            <span style="font-size:10px; color:#495057;">${end.effect}</span>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="badge-item locked">
+                            <span style="color:#868e96;">🔒 미해제 뱃지</span>
+                            <span style="font-size:9px; color:#adb5bd;">[${end.id}]엔딩 클리어 필요</span>
+                        </div>
+                    `;
+                }
+            });
+
+            html += `
+                        </div>
+                    </div>
+
+                    <div style="display:flex; gap:10px; margin-top:5px;">
+                        <button class="btn-menu btn-menu-book" style="flex:1; padding:12px;" onclick="showTitleScreen()">취소</button>
+                        <button class="btn-start" style="flex:2;" onclick="startGame()">장착 완료 및 인생 진입</button>
+                    </div>
+                </div>
+            `;
+            document.getElementById('game-container').innerHTML = html;
+        }
+
+        function toggleBadgeSelect(id) {
+            const idx = selectedBadges.indexOf(id);
+            if (idx > -1) {
+                selectedBadges.splice(idx, 1);
+                document.getElementById(`badge-item-${id}`).classList.remove('selected');
+            } else {
+                if (selectedBadges.length >= 3) {
+                    alert("뱃지는 최대 3개까지만 동시에 장착할 수 있습니다!");
+                    return;
+                }
+                selectedBadges.push(id);
+                document.getElementById(`badge-item-${id}`).classList.add('selected');
+            }
+            document.getElementById('badge-count-text').textContent = `선택: ${selectedBadges.length} / 3`;
+        }
+
+        function selectGender(gender) {
+            playerGender = gender;
+            document.getElementById('gender-m').className = gender === '남성' ? 'gender-btn selected-male' : 'gender-btn';
+            document.getElementById('gender-f').className = gender === '여성' ? 'gender-btn selected-female' : 'gender-btn';
+        }
+
+        function startGame() {
+            const inputName = document.getElementById('player-name').value.trim();
+            if (inputName !== "") playerName = inputName;
+            
+            gameMode = "DEFAULT";
+            day = 1;
+            currentTurn = maxTurn;
+            currentEnergy = maxEnergy;
+            faintCount = 0;
+            inventory = [];
+            
+            gold = 0;
+            levels = { int: 0, cha: 0, str: 0, job: 0 };
+            currentExp = { int: 0, cha: 0, str: 0, job: 0 };
+
+            let logIntroAdditions = [];
+            selectedBadges.forEach(id => {
+                if (id === 'scholar') { levels.int = 3; logIntroAdditions.push("🧠지력Lv.3"); }
+                else if (id === 'celeb') { levels.cha = 3; logIntroAdditions.push("✨매력Lv.3"); }
+                else if (id === 'physical') { levels.str = 3; logIntroAdditions.push("💪체력Lv.3"); }
+                else if (id === 'ceo') { levels.job = 3; logIntroAdditions.push("💼알바Lv.3"); }
+                else if (id === 'asset') { gold = 80; logIntroAdditions.push("💰초기자금+80G"); }
+                else if (id === 'exhaust') { levels.str = 3; logIntroAdditions.push("🏥체력Lv.3 선행"); }
+                else if (id === 'god') { levels.int = 2; levels.cha = 2; levels.str = 2; levels.job = 2; logIntroAdditions.push("👑전스탯Lv.2"); }
+                else if (id === 'cyborg') { levels.int = 2; levels.str = 2; logIntroAdditions.push("🤖지력/체력Lv.2"); }
+                else if (id === 'politician') { levels.int = 2; levels.cha = 2; logIntroAdditions.push("🏛️지력/매력Lv.2"); }
+                else if (id === 'strategist') { levels.int = 2; levels.job = 2; logIntroAdditions.push("📈지력/알바Lv.2"); }
+                else if (id === 'model') { levels.cha = 2; levels.str = 2; logIntroAdditions.push("📸매력/체력Lv.2"); }
+                else if (id === 'idol') { levels.cha = 2; levels.job = 2; logIntroAdditions.push("🎤매력/알바Lv.2"); }
+                else if (id === 'agent') { levels.str = 2; levels.job = 2; logIntroAdditions.push("🥷체력/알바Lv.2"); }
+                else if (id === 'elite') { levels.int = 1; levels.cha = 1; levels.str = 1; logIntroAdditions.push("🎓3개스탯Lv.1"); }
+            });
+
+            generateShopItems();
+            renderBaseLayout();
+            
+            let badgeAlert = selectedBadges.length > 0 ? `<br><span style="color:#5f3dc4; font-weight:700;">[🏅 장착 버프 활성화]: ${logIntroAdditions.join(', ')} 이 적용되었습니다!</span>` : "";
+            document.getElementById('log-text').innerHTML = `${playerName}님, 시뮬레이션이 시작되었습니다! 매일 아침 지급되는 소멸성 영양제를 적극 활용해 보세요.${badgeAlert}`;
+            
+            // 🛠️ 1일차 진입할 때도 웰빙 뱃지가 켜져있다면 즉시 아이템 지급 및 알림창 팝업 발동!
+            if (selectedBadges.includes('normal')) {
+                inventory.push("💊 소소한 행복 영양제");
+                spawnWellbeingModal(1);
+            }
+
+            updateUI();
+        }
+
+        function renderBaseLayout() {
+            let badgesHtml = "";
+            selectedBadges.forEach(id => {
+                let found = endingList.find(e => e.id === id);
+                if (found) badgesHtml += `<span class="active-badge-pill">🏅 ${found.badge}</span>`;
+            });
+
+            document.getElementById('game-container').innerHTML = `
+                <div id="modal-placement-gate"></div>
+
+                <div class="status-header">
+                    <div class="header-top">
+                        <div class="profile-badge" id="profile-display"></div>
+                        <div class="calendar-badge" id="day-display"></div>
+                        <div class="turn-badge" id="turn-display"></div>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; font-weight:700; font-size:13px;">
+                        <span>🔋 기력 매니지먼트</span>
+                        <span id="energy-text">100 / 100</span>
+                    </div>
+                    <div class="energy-bar-container"><div class="energy-bar" id="energy-bar"></div></div>
+                    <div class="stats-grid">
+                        <div>🧠 지력 Lv.<b id="lvl-int">0</b> <span id="exp-int">0/2</span></div>
+                        <div>✨ 매력 Lv.<b id="lvl-cha">0</b> <span id="exp-cha">0/2</span></div>
+                        <div>💪 체력 Lv.<b id="lvl-str">0</b> <span id="exp-str">0/2</span></div>
+                        <div>💼 알바 Lv.<b id="lvl-job">0</b> <span id="exp-job">0/2</span></div>
+                    </div>
+                    <div class="active-badges-row">${badgesHtml}</div>
+                    <div style="margin-top: 8px; font-size: 13px; text-align: right; font-weight: 600;">💰 자금: <span id="stat-gold">0</span> G | 🏥 과로: <span id="stat-faint" style="color:#ff5e62; font-weight:700;">0</span>회</div>
+                </div>
+                <div class="inventory-panel" id="inventory-panel">🎒 보관함이 비어있습니다.</div>
+                <div class="display-panel" id="display-panel"><p class="log-text" id="log-text"></p></div>
+                <div class="action-grid" id="action-area"></div>
+            `;
+        }
+
+        // 🛠️ [신규 함수] 웰빙 뱃지 전용 알림 모달 출력기
+        function spawnWellbeingModal(currentDay) {
+            const gate = document.getElementById('modal-placement-gate');
+            if(!gate) return;
+
+            gate.innerHTML = `
+                <div class="wellbeing-modal-overlay" id="wb-overlay">
+                    <div class="wellbeing-modal-box">
+                        <div class="modal-badge-icon">🛌</div>
+                        <div class="modal-headline">소소한 행복 배달 완료! (DAY ${currentDay})</div>
+                        <div class="modal-subtext">
+                            웰빙 해탈 가이드의 축복이 내렸습니다.<br>
+                            가방에 <b>[💊 소소한 행복 영양제]</b>가 지급되었습니다!<br><br>
+                            <span style="color:#fa5252; font-weight:700;">⚠️ 주의: 오늘 밤 취침 전까지 먹지 않으면 흔적도 없이 사라집니다!</span>
+                        </div>
+                        <button class="btn-modal-close" onclick="closeWellbeingModal()">기분 좋게 하루 시작하기</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function closeWellbeingModal() {
+            const overlay = document.getElementById('wb-overlay');
+            if (overlay) overlay.remove();
+        }
+
+        function generateShopItems() {
+            let shuffled = [...itemDatabase].sort(() => 0.5 - Math.random());
+            currentShopItems = shuffled.slice(0, 4);
+            boughtItemsToday = []; 
+        }
+
+        function getAdjustedCost(baseCost) { let cost = baseCost - levels.str; return cost < 1 ? 1 : cost; }
+
+        function updateUI() {
+            if (gameMode === "SETUP" || gameMode === "TITLE") return;
+
+            document.getElementById('profile-display').textContent = `${playerGender === '남성' ? '♂️' : '♀️'} ${playerName}`;
+            document.getElementById('day-display').textContent = day <= 7 ? `DAY ${day} (${dayNames[day]})` : "종료";
+            document.getElementById('turn-display').textContent = `남은 턴: ${currentTurn}/${maxTurn}`;
+            document.getElementById('energy-text').textContent = `${currentEnergy} / ${maxEnergy}`;
+            
+            let barWidth = (currentEnergy / maxEnergy) * 100;
+            if (barWidth > 100) barWidth = 100;
+            document.getElementById('energy-bar').style.width = `${barWidth}%`;
+
+            document.getElementById('lvl-int').textContent = levels.int;
+            document.getElementById('lvl-cha').textContent = levels.cha;
+            document.getElementById('lvl-str').textContent = levels.str;
+            document.getElementById('lvl-job').textContent = levels.job;
+
+            document.getElementById('exp-int').textContent = levels.int >= 9 ? "MAX" : `${currentExp.int}/${getRequiredExp(levels.int)}`;
+            document.getElementById('exp-cha').textContent = levels.cha >= 9 ? "MAX" : `${currentExp.cha}/${getRequiredExp(levels.cha)}`;
+            document.getElementById('exp-str').textContent = levels.str >= 9 ? "MAX" : `${currentExp.str}/${getRequiredExp(levels.str)}`;
+            document.getElementById('exp-job').textContent = levels.job >= 9 ? "MAX" : `${currentExp.job}/${getRequiredExp(levels.job)}`;
+
+            document.getElementById('stat-gold').textContent = gold;
+            document.getElementById('stat-faint').textContent = faintCount;
+
+            renderInventory();
+
+            if (gameMode === "DEFAULT" && day <= 7) {
+                if (currentTurnChoices.length === 0) generateRandomChoices();
+                renderGridActions();
+            } else if (gameMode === "SHOP") {
+                renderShopActions();
+            }
+        }
+
+        function renderInventory() {
+            const invPanel = document.getElementById('inventory-panel');
+            if (inventory.length === 0) {
+                invPanel.innerHTML = `<span>🎒 보관함이 비어있습니다.</span>`;
+                return;
+            }
+            let html = `<span style="font-weight:700; color:#495057;">🎒 가방(클릭시사용):</span> `;
+            inventory.forEach((itemName, index) => {
+                // 웰빙 전용 아이템은 시각적인 애니메이션과 핑크빛 스타일 가산 처리
+                if (itemName.includes("소소한 행복 영양제")) {
+                    html += `<span class="item-chip wellbeing-happy" onclick="useInventoryItem(${index})">${itemName}</span>`;
+                } else {
+                    html += `<span class="item-chip" onclick="useInventoryItem(${index})">${itemName}</span>`;
+                }
+            });
+            invPanel.innerHTML = html;
+        }
+
+        function useInventoryItem(index) {
+            if (gameMode === "EVENT" || gameMode === "SHOP") {
+                alert("돌발 상황 진행 중이거나 상점 이용 중에는 아이템을 사용할 수 없습니다.");
+                return; 
+            }
+            const itemName = inventory[index];
+            let useSuccess = false;
+            let resultText = "";
+            
+            // 🛠️ 영양제 복용 기믹 설계
+            if (itemName.includes("소소한 행복 영양제")) {
+                currentEnergy = Math.min(100, currentEnergy + 10);
+                resultText = `💊 <b>소소한 행복 영양제</b>를 복용했습니다! 기력이 소소하게 +10 회복됩니다.`;
+                useSuccess = true;
+            } else if (itemName.includes("에스프레소")) {
+                currentEnergy = Math.min(100, currentEnergy + 25);
+                resultText = `☕ <b>에스프레소</b>를 마셔 기력을 25 회복했습니다!`;
+                useSuccess = true;
+            } else if (itemName.includes("몬스터 드링크")) {
+                currentEnergy = Math.min(100, currentEnergy + 50);
+                resultText = `🔋 <b>몬스터 드링크</b>를 마셔 기력을 50 회복했습니다!`;
+                useSuccess = true;
+            } else {
+                resultText = `⚠️ <b>${itemName}</b>은 배낭에 소지하는 것만으로 적용되는 기물입니다.`;
+            }
+
+            if (useSuccess) {
+                inventory.splice(index, 1);
+                document.getElementById('display-panel').innerHTML = `<p class="log-text">${resultText}</p>`;
+                updateUI();
+            } else {
+                document.getElementById('display-panel').innerHTML = `<p class="log-text">${resultText}</p>`;
+            }
+        }
+
+        function generateRandomChoices() {
+            const pool = ['work', 'train', 'study', 'hobby', 'rest'];
+            currentTurnChoices = [];
+            for (let i = 0; i < 4; i++) { currentTurnChoices.push(pool[Math.floor(Math.random() * pool.length)]); }
+        }
+
+        function renderGridActions() {
+            const actionArea = document.getElementById('action-area');
+            let htmlContent = "";
+
+            currentTurnChoices.forEach((type) => {
+                if (type === 'work') {
+                    const cost = getAdjustedCost(25); const job = contentSheet.work[levels.job];
+                    htmlContent += `<button class="btn btn-work" onclick="doAction('work', ${cost})"><span>💼 ${job.name}</span><span class="badge">기력-${cost} / +${job.income}G</span></button>`;
+                } else if (type === 'train') {
+                    const cost = getAdjustedCost(22);
+                    htmlContent += `<button class="btn btn-train" onclick="doAction('train', ${cost})"><span>🏋️ ${contentSheet.train[levels.str]}</span><span class="badge">기력-${cost}</span></button>`;
+                } else if (type === 'study') {
+                    const cost = getAdjustedCost(15);
+                    htmlContent += `<button class="btn btn-study" onclick="doAction('study', ${cost})"><span>📚 ${contentSheet.study[levels.int]}</span><span class="badge">기력-${cost}</span></button>`;
+                } else if (type === 'hobby') {
+                    const cost = getAdjustedCost(15);
+                    htmlContent += `<button class="btn btn-hobby" onclick="doAction('hobby', ${cost})"><span>🎨 ${contentSheet.hobby[levels.cha]}</span><span class="badge">기력-${cost}</span></button>`;
+                } else if (type === 'rest') {
+                    htmlContent += `<button class="btn btn-rest" onclick="doAction('rest', -12)"><span>🛌 낮잠 휴식</span><span class="badge">기력 +12</span></button>`;
+                }
+            });
+            actionArea.innerHTML = htmlContent;
+        }
+
+        function openShopMenu() {
+            gameMode = "SHOP";
+            document.getElementById('display-panel').innerHTML = `
+                <div class="shop-title">🌙 야간 비밀 상점 오픈</div>
+                <p class="log-text">내일 일과를 편하게 만들어 줄 버프 아이템을 구매하세요.</p>
+            `;
+            updateUI();
+        }
+
+        function renderShopActions() {
+            const actionArea = document.getElementById('action-area');
+            let htmlContent = "";
+
+            currentShopItems.forEach((item) => {
+                const alreadyBought = boughtItemsToday.includes(item.id);
+                const canAfford = gold >= item.price;
+                
+                if (alreadyBought) {
+                    htmlContent += `<button class="btn" style="background:#e9ecef; color:#adb5bd; cursor:not-allowed;" disabled><span>🔒 ${item.name}</span><span class="lock-icon">금일 품절</span></button>`;
+                } else {
+                    htmlContent += `<button class="btn" style="background:#fff4e6; color:#d9480f;" onclick="buyShopItem('${item.id}', ${item.price})" ${!canAfford ? 'disabled' : ''}><span>${item.name} (${item.price}G)</span><span class="badge">${item.desc}</span></button>`;
+                }
+            });
+
+            htmlContent += `<button class="btn btn-system" onclick="exitShop()"><span>🔙 쇼핑 종료하고 잘 준비하기</span></button>`;
+            actionArea.innerHTML = htmlContent;
+        }
+
+        function addItemExp(type, amount) {
+            if (levels[type] >= 9) return "이미 최고 레벨(MAX) 상태입니다.";
+            currentExp[type] += amount;
+            let lvUpCount = 0;
+            while (currentExp[type] >= getRequiredExp(levels[type])) {
+                currentExp[type] -= getRequiredExp(levels[type]);
+                levels[type]++;
+                lvUpCount++;
+                if (levels[type] >= 9) { currentExp[type] = 0; break; }
+            }
+            let typeName = type === 'int' ? '🧠 지력' : type === 'cha' ? '✨ 매력' : type === 'str' ? '💪 체력' : '💼 알바';
+            if (lvUpCount > 0) {
+                return `✨ [${typeName}] 경험치 +${amount} 누적! <span class="levelup-text">🎉 레벨 업 -> Lv.${levels[type]}</span>`;
+            }
+            return `✨ [${typeName}] 경험치 +${amount} 증가했습니다.`;
+        }
+
+        function buyShopItem(id, price) {
+            if (boughtItemsToday.includes(id) || gold < price) return;
+            gold -= price;
+            boughtItemsToday.push(id); 
+
+            let findItem = itemDatabase.find(i => i.id === id);
+            let logMsg = "";
+
+            if (findItem.type === 'use') {
+                inventory.push(findItem.name);
+                logMsg = `🎒 [${findItem.name}]을 수령하여 가방에 보관했습니다. (낮에 클릭해 복용 가능)`;
+            } else {
+                if (id === 'book') logMsg = addItemExp('int', 3);
+                else if (id === 'vitamin') logMsg = addItemExp('str', 3);
+                else if (id === 'ampoule') logMsg = addItemExp('cha', 3);
+                else if (id === 'guidebook') logMsg = addItemExp('job', 3);
+                else if (id === 'clover') { inventory.push("🍀 네잎클로버"); logMsg = `🍀 [네잎클로버] 특수 엔딩용 행운 기물이 영구 가산되었습니다.`; }
+                else if (id === 'lotto') {
+                    let r = Math.random();
+                    if (r < 0.5) logMsg = "😭 복권 개봉: 아쉬운 꽝이었습니다! (0G)";
+                    else if (r < 0.85) { gold += 5; logMsg = "🎫 복권 개봉: 아쉬운 소액 당첨입니다. (+5G)"; }
+                    else { gold += 30; logMsg = "🎉 복권 개봉: 기분 좋은 중박 당첨! (+30G)"; }
+                }
+            }
+
+            document.getElementById('display-panel').innerHTML = `<div class="shop-title">🛒 결제 완료</div><p class="log-text">${logMsg}</p>`;
+            renderShopActions();
+            updateUI();
+        }
+
+        function exitShop() {
+            gameMode = "EVENT";
+            document.getElementById('display-panel').innerHTML = `<p class="log-text">오늘 하루 수고 많으셨습니다. 잘 준비를 하세요.</p>`;
+            document.getElementById('action-area').innerHTML = `
+                <button class="btn btn-shop-toggle" style="grid-column:span 2;" onclick="openShopMenu()"><span>🛒 야간 상점 원격 접속</span></button>
+                <button class="btn btn-system" onclick="nextDay()"><span>☀️ 오늘 일정 정산하고 취침하기</span></button>
+            `;
+            updateUI();
+        }
+
+        function gainExp(type) {
+            if (levels[type] >= 9) return "";
+            currentExp[type]++;
+            if (currentExp[type] >= getRequiredExp(levels[type])) {
+                levels[type]++;
+                currentExp[type] = 0;
+                let typeName = type === 'int' ? '🧠 지력' : type === 'cha' ? '✨ 매력' : type === 'str' ? '💪 체력' : '💼 알바';
+                return `<span class="levelup-text">🎉 [${typeName}] 렙업! Lv.${levels[type]}</span>`;
+            }
+            return "";
+        }
+
+        function doAction(type, energyCost) {
+            const isLastTurn = (currentTurn === 1);
+            currentTurn--;
+
+            if (!isLastTurn && energyCost > 0 && (currentEnergy - energyCost <= 0)) {
+                currentEnergy = 0; currentTurnChoices = []; handleForcedEndDay(); return;
+            }
+
+            currentEnergy -= energyCost;
+            
+            if (currentEnergy > maxEnergy) currentEnergy = maxEnergy;
+            if (currentEnergy < 0) currentEnergy = 0;
+
+            let msg = ""; let lvMsg = "";
+
+            if (type === 'work') {
+                const job = contentSheet.work[levels.job]; gold += job.income; lvMsg = gainExp('job');
+                msg = `💼 [${job.name}] 완료! +${job.income}G 가산.`;
+            } else if (type === 'train') {
+                lvMsg = gainExp('str'); msg = `🏋️ [${contentSheet.train[levels.str - (lvMsg ? 1 : 0)]}] 완료!`;
+            } else if (type === 'study') {
+                lvMsg = gainExp('int'); msg = `📚 [${contentSheet.study[levels.int - (lvMsg ? 1 : 0)]}] 완료!`;
+            } else if (type === 'hobby') {
+                lvMsg = gainExp('cha'); msg = `🎨 [${contentSheet.hobby[levels.cha - (lvMsg ? 1 : 0)]}] 완료!`;
+            } else if (type === 'rest') {
+                msg = "🛌 낮잠 휴식 완료. (기력 +12)";
+            }
+
+            document.getElementById('display-panel').innerHTML = `<p class="log-text">${msg}</p>${lvMsg}`;
+
+            if (currentTurn <= 0) {
+                document.getElementById('display-panel').innerHTML = `<p class="log-text">${msg}</p>${lvMsg}<br><b style="color:#ff5e62;">🌙 밤이 되었습니다. 오늘 일과가 종료되었습니다!</b>`;
+                document.getElementById('action-area').innerHTML = `
+                    <button class="btn btn-shop-toggle" style="grid-column:span 2;" onclick="openShopMenu()"><span>🛒 야간 상점 원격 접속</span></button>
+                    <button class="btn btn-system" onclick="nextDay()"><span>☀️ 오늘 일정 정산하고 취침하기</span></button>
+                `;
+                gameMode = "EVENT"; updateUI(); return;
+            }
+
+            gameMode = "DEFAULT";
+            generateRandomChoices(); 
+            updateUI(); 
+        }
+
+        function handleForcedEndDay() {
+            gameMode = "EVENT";
+            faintCount++; 
+            document.getElementById('display-panel').innerHTML = `
+                <div class="shop-title" style="color:#fa5252;">❌ 과로로 기절 (누적: ${faintCount}회)</div>
+                <p class="log-text">기력이 다해 쓰러졌습니다. 능력치는 안전하게 보존되지만 야간 상점은 거래 정지됩니다.</p>
+            `;
+            document.getElementById('action-area').innerHTML = `<button class="btn btn-system" onclick="nextDay()"><span>☀️ 다음 날 아침 맞이하기</span></button>`;
+            updateUI();
+        }
+
+        function nextDay() {
+            // 🛠️ [리워크 핵심 연산] 자러 가기 전에 인벤토리에 남아있던 '소소한 행복 영양제'는 전부 탐색하여 가방에서 소멸(필터링)시킵니다.
+            inventory = inventory.filter(itemName => !itemName.includes("소소한 행복 영양제"));
+
+            day++; currentTurn = maxTurn; currentTurnChoices = []; generateShopItems(); 
+            if (day > 7) { showEnding(); return; }
+
+            currentEnergy = maxEnergy; 
+            let morningAlert = "";
+            
+            // 🛠️ 웰빙 뱃지가 켜져 있다면, 가방에 영양제 추가 및 전용 모달 출력 트리거링 작동
+            if (selectedBadges.includes('normal')) {
+                inventory.push("💊 소소한 행복 영양제");
+                spawnWellbeingModal(day);
+            }
+            if (selectedBadges.includes('lucky')) {
+                inventory.push("🎫 한탕 복권");
+                morningAlert += " [🍀행운 뱃지: 보너스 일일 복권 가방 인입 완료]";
+            }
+
+            gameMode = "EVENT";
+            updateUI(); 
+
+            if (day === 2) triggerDay2Event(morningAlert);
+            else if (day === 3) triggerDay3Event(morningAlert);
+            else if (day === 4) triggerDay4Event(morningAlert);
+            else if (day === 5) triggerDay5Event(morningAlert);
+            else if (day === 6) triggerDay6Event(morningAlert);
+            else if (day === 7) triggerDay7Event(morningAlert);
+        }
+
+        function triggerDay2Event(extra) {
+            const isLocked = levels.int < 2;
+            document.getElementById('display-panel').innerHTML = `<div class="event-title">🚨 DAY 2 돌발: 가상자산 투자 유혹</div><p style="font-size:11px; color:#228be6;">${extra}</p>`;
+            document.getElementById('action-area').innerHTML = `
+                <button class="btn btn-event" onclick="selectEventOption('coin-yes')"><span>🪙 친구를 믿고 30G SNOW코인 송금</span></button>
+                <button class="btn btn-event" onclick="selectEventOption('coin-no')"><span>🙅 거절하고 내 갈 길 간다.</span></button>
+                <button class="btn btn-event" onclick="selectEventOption('coin-smart')" ${isLocked ? 'disabled' : ''}><span>${isLocked ? '🔒 [지력 2 필요] ' : '💡 '}차트 분석으로 참교육</span></button>
+            `;
+        }
+        function triggerDay3Event(extra) {
+            const isLocked = levels.str < 2;
+            document.getElementById('display-panel').innerHTML = `<div class="event-title">🚨 DAY 3 돌발: 골목길 취객 무리</div><p style="font-size:11px; color:#228be6;">${extra}</p>`;
+            document.getElementById('action-area').innerHTML = `
+                <button class="btn btn-event" onclick="selectEventOption('fight-run')"><span>🏃 전력 도망 (기력-15)</span></button>
+                <button class="btn btn-event" onclick="selectEventOption('fight-pay')"><span>💸 20G 통행세 지불</span></button>
+                <button class="btn btn-event" onclick="selectEventOption('fight-win')" ${isLocked ? 'disabled' : ''}><span>${isLocked ? '🔒 [체력 2 필요] ' : '👊 '}피지컬로 제압</span></button>
+            `;
+        }
+        function triggerDay4Event(extra) {
+            const isLocked = levels.cha < 3;
+            document.getElementById('display-panel').innerHTML = `<div class="event-title">🚨 DAY 4 돌발: 페스티벌 대타 무대</div><p style="font-size:11px; color:#228be6;">${extra}</p>`;
+            document.getElementById('action-area').innerHTML = `
+                <button class="btn btn-event" onclick="selectEventOption('stage-no')"><span>😥 거절하고 잠적</span></button>
+                <button class="btn btn-event" onclick="selectEventOption('stage-bad')"><span>🎤 흑역사 무대 생성</span></button>
+                <button class="btn btn-event" onclick="selectEventOption('stage-epic')" ${isLocked ? 'disabled' : ''}><span>${isLocked ? '🔒 [매력 3 필요] ' : '✨ '}관객 대규모 홀딩</span></button>
+            `;
+        }
+        function triggerDay5Event(extra) {
+            const isLocked = levels.int < 4;
+            document.getElementById('display-panel').innerHTML = `<div class="event-title">🚨 DAY 5 돌발: 길거리 기획사 사기단</div><p style="font-size:11px; color:#228be6;">${extra}</p>`;
+            document.getElementById('action-area').innerHTML = `
+                <button class="btn btn-event" onclick="selectEventOption('cast-yes')" ${gold < 50 ? 'disabled' : ''}><span>✨ 계약금 50G 선지급</span></button>
+                <button class="btn btn-event" onclick="selectEventOption('cast-no')"><span>🤨 경멸의 눈빛 퇴장</span></button>
+                <button class="btn btn-event" onclick="selectEventOption('cast-smart')" ${isLocked ? 'disabled' : ''}><span>${isLocked ? '🔒 [지력 4 필요] ' : '🕵️ '}사법 규정 조항 설파</span></button>
+            `;
+        }
+        function triggerDay6Event(extra) {
+            const isLocked = levels.str < 5;
+            document.getElementById('display-panel').innerHTML = `<div class="event-title">🚨 DAY 6 돌발: 가벽 붕괴 구조 재난</div><p style="font-size:11px; color:#228be6;">${extra}</p>`;
+            document.getElementById('action-area').innerHTML = `
+                <button class="btn btn-event" onclick="selectEventOption('rescue-watch')"><span>😰 소리쳐서 타인 유도</span></button>
+                <button class="btn btn-event" onclick="selectEventOption('rescue-fail')"><span>🏋️ 무리하다 요추 삐끗</span></button>
+                <button class="btn btn-event" onclick="selectEventOption('rescue-hero')" ${isLocked ? 'disabled' : ''}><span>${isLocked ? '🔒 [체력 5 필요] ' : '🚒 '}초인 파워로 구조</span></button>
+            `;
+        }
+        function triggerDay7Event(extra) {
+            const isLocked = levels.cha < 5;
+            document.getElementById('display-panel').innerHTML = `<div class="event-title">🚨 DAY 7 돌발: 명품 패션쇼 런웨이</div><p style="font-size:11px; color:#228be6;">${extra}</p>`;
+            document.getElementById('action-area').innerHTML = `
+                <button class="btn btn-event" onclick="selectEventOption('runway-pass')"><span>🏃 압박감에 도망</span></button>
+                <button class="btn btn-event" onclick="selectEventOption('runway-walk')"><span>🕴️ 목각 뚝딱이 보행</span></button>
+                <button class="btn btn-event" onclick="selectEventOption('runway-god')" ${isLocked ? 'disabled' : ''}><span>${isLocked ? '🔒 [매력 5 필요] ' : '👑 '}압도적 아우라 독점</span></button>
+            `;
+        }
+
+        function selectEventOption(choice) {
+            let resultMsg = "";
+            if (choice === 'coin-yes') { gold = Math.max(0, gold - 30); resultMsg = "💸 결과: 사기당했습니다. (-30G)"; }
+            else if (choice === 'coin-no') { resultMsg = addItemExp('int', 2); }
+            else if (choice === 'coin-smart') { gold += 60; resultMsg = "😎 결과: 합의금 명목으로 갈취! (+60G)"; }
+            else if (choice === 'fight-run') { currentEnergy = Math.max(0, currentEnergy - 15); resultMsg = "🏃 결과: 사력의 도망 완료. (기력 -15)"; }
+            else if (choice === 'fight-pay') { gold = Math.max(0, gold - 20); resultMsg = "💸 결과: 삥을 뜯겼습니다. (-20G)"; }
+            else if (choice === 'fight-win') { resultMsg = addItemExp('job', 2); }
+            else if (choice === 'stage-no') { resultMsg = "🧘 결과: 평온한 관람객 포지션 유지."; }
+            else if (choice === 'stage-bad') { currentExp.cha = 0; resultMsg = "😭 결과: 인터넷 흑역사 박제 (매력 경험치 초기화)"; }
+            else if (choice === 'stage-epic') { gold += 100; resultMsg = "🎤 결과: 현장 위로금 수령! (+100G)"; }
+            else if (choice === 'cast-yes') { gold = Math.max(0, gold - 50); resultMsg = "😭 결과: 위장 유령 계약 사기단이었습니다. (-50G)"; }
+            else if (choice === 'cast-no') { resultMsg = "🚪 결과: 완벽 필터링 통과."; }
+            else if (choice === 'cast-smart') { resultMsg = addItemExp('int', 4); }
+            else if (choice === 'rescue-watch') { resultMsg = "🚪 결과: 구조대 안전 조치 완료."; }
+            else if (choice === 'rescue-fail') { currentEnergy = Math.max(0, currentEnergy - 30); resultMsg = "🚑 결과: 척추 내상 발생 (기력 -30)"; }
+            else if (choice === 'rescue-hero') { gold += 120; resultMsg = "🚒 결과: 시민 포상금 정산 완료! (+120G)"; }
+            else if (choice === 'runway-pass') { resultMsg = "🧘 결과: 평화 가치 보존."; }
+            else if (choice === 'runway-walk') { gold += 20; resultMsg = "🕴️ 결과: 뚝딱이 챌린지 밈 바이럴 정산. (+20G)"; }
+            else if (choice === 'runway-god') {
+                levels.int++; levels.cha++; levels.str++; levels.job++;
+                resultMsg = "👑 결과: 전 무대 장악! 전 스탯 단계가 한 단계 가산됩니다! (전체 Lv +1)";
+            }
+
+            document.getElementById('display-panel').innerHTML = `<p class="log-text">${resultMsg}</p>`;
+            gameMode = "DEFAULT";
+            generateRandomChoices();
+            updateUI();
+        }
+
+        function showEnding() {
+            let endingId = "normal";
+            let hasClover = inventory.includes("🍀 네잎클로버");
+
+            let eliteStatsCount = 0;
+            if (levels.int >= 5) eliteStatsCount++;
+            if (levels.cha >= 5) eliteStatsCount++;
+            if (levels.str >= 5) eliteStatsCount++;
+            if (levels.job >= 5) eliteStatsCount++;
+
+            if (levels.int >= 9 && levels.cha >= 9 && levels.str >= 9 && levels.job >= 9) { endingId = "god"; }
+            else if (faintCount >= 3) { endingId = "exhaust"; }
+            else if (gold >= 200) { endingId = "asset"; }
+            else if (levels.int >= 9) { endingId = "scholar"; }
+            else if (levels.cha >= 9) { endingId = "celeb"; }
+            else if (levels.str >= 9) { endingId = "physical"; }
+            else if (levels.job >= 9) { endingId = "ceo"; }
+            else if (levels.int >= 7 && levels.str >= 7) { endingId = "cyborg"; }
+            else if (levels.int >= 7 && levels.cha >= 7) { endingId = "politician"; }
+            else if (levels.int >= 7 && levels.job >= 7) { endingId = "strategist"; }
+            else if (levels.cha >= 7 && levels.str >= 7) { endingId = "model"; }
+            else if (levels.cha >= 7 && levels.job >= 7) { endingId = "idol"; }
+            else if (levels.str >= 7 && levels.job >= 7) { endingId = "agent"; }
+            else if (eliteStatsCount >= 3) { endingId = "elite"; }
+            else if (hasClover) { endingId = "lucky"; }
+            else { endingId = "normal"; }
+
+            let currentEndingObj = endingList.find(e => e.id === endingId);
+            localStorage.setItem(`end_lock_${endingId}`, "true");
+
+            document.getElementById('display-panel').innerHTML = `
+                <div style="width:100%;">
+                    <div class="event-title" style="color:#764ba2; font-size:17px;">🎉 7일 완주 엔딩 정산 완료</div>
+                    <div style="font-size: 14px; font-weight:800; margin: 4px 0; color:#212529;">${currentEndingObj.name}</div>
+                    <p class="log-text" style="font-size:12px; margin-bottom:8px;">${currentEndingObj.desc}</p>
+                    <div style="background:#fff3bf; padding:6px; border-radius:8px; font-size:11px; font-weight:700; color:#e67e22; margin-bottom:6px;">
+                        🎁 영구 해금 보상 뱃지: [${currentEndingObj.badge}] 획득! 다음 회차 전용 장착 가능.
+                    </div>
+                    <div class="ending-illustration" style="height:120px; background:#1a1c1e;">${endingIllustrations[endingId]}</div>
+                </div>
+            `;
+            document.getElementById('action-area').innerHTML = `<button class="btn btn-system" style="grid-column: span 2;" onclick="resetToTitle()"><span>🔙 아카이브 메인화면으로 진출</span></button>`;
+        }
+
+        function resetToTitle() {
+            day = 1; gold = 0; currentEnergy = 100; currentTurn = maxTurn; faintCount = 0;
+            levels = { int: 0, cha: 0, str: 0, job: 0 }; currentExp = { int: 0, cha: 0, str: 0, job: 0 };
+            currentTurnChoices = []; inventory = []; boughtItemsToday = []; selectedBadges = [];
+            showTitleScreen();
+        }
+
+        function exportArchiveCode() {
+            let unlockedIds = [];
+            endingList.forEach(end => { if (localStorage.getItem(`end_lock_${end.id}`) === "true") unlockedIds.push(end.id); });
+            if (unlockedIds.length === 0) { alert("해제된 내역이 없습니다."); return; }
+            let encoded = btoa(JSON.stringify(unlockedIds));
+            navigator.clipboard.writeText(encoded).then(() => { alert("🔒 백업 코드가 클립보드에 복사되었습니다!"); });
+        }
+
+        function importArchiveCode() {
+            let code = prompt("백업 코드를 입력하세요:"); if (!code) return;
+            try {
+                let decodedArr = JSON.parse(atob(code.trim()));
+                if (Array.isArray(decodedArr)) {
+                    decodedArr.forEach(id => { localStorage.setItem(`end_lock_${id}`, "true"); });
+                    alert("🎉 도감 및 보상 뱃지가 완벽히 동기화되었습니다!");
+                    showArchiveBook();
+                }
+            } catch(e) { alert("파싱 실패"); }
+        }
+    </script>
+</body>
+</html>
