@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>7일간의 인생 역전 시뮬레이터 - 인터페이스 개선</title>
+    <title>7일간의 인생 역전 시뮬레이터 - 마스터 밸런스</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', -apple-system, system-ui, sans-serif; }
         body { background-color: #f0f2f5; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
@@ -83,7 +83,6 @@
         .btn-system { background-color: #212529; color: white; grid-column: span 2; padding: 14px; font-size: 14px; border-radius: 12px; border: none; cursor: pointer; }
         .btn-shop-toggle { background-color: #fff4e6; color: #d9480f; border: 1px solid #ffd8a8; grid-column: span 2; padding: 14px; font-size: 13px; cursor: pointer; border-radius: 12px; font-weight: 700; }
         
-        /* 🚨 핵심 디자인: 선택 불가한 버튼을 짙은 회색으로 변경하고 마우스 클릭 및 포인터를 완전 봉쇄 */
         .btn-event { background-color: #ffffff; color: #495057; border: 1px solid #ced4da; text-align: left; align-items: flex-start; width: 100%; cursor: pointer; border-radius: 12px; padding: 12px; transition: all 0.1s; }
         .btn-event:disabled, .btn:disabled { background-color: #868e96 !important; color: #dee2e6 !important; border-color: #495057 !important; cursor: not-allowed !important; transform: none !important; opacity: 0.85; box-shadow: none; pointer-events: none; }
 
@@ -152,7 +151,7 @@
                 { name: "🧪 임상시험 참여", income: 45 }, { name: "💎 대기업 핵심 인턴", income: 50 }
             ],
             train: ["🏃 가벼운 조깅", "🏋️ 헬스장 등록", "🔥 크로스핏 와드", "🧘 기구 필라테스", "🥊 정통 복싱 스파링", "🧗 실내 클라이밍", "🌊 새벽 실내 수영", "🪂 지옥의 서킷", "⛰️ 야간 산악 종주", "⚡ 신체 한계 개방"],
-            study: ["🔢 초등 셈틀 수학", "📺 EBS 스타강사 인강", "📚 전공 서적 밤샘", "📝 자격증 기출 풀이", "🗣️ 원어민 프리토킹", "📊 딥러닝 부트캠프", "🔬 학술지 심화 논문", "💡 특허 아이디어 출원", "🎓 석학 미팅 참석", "🧠 상대성 영역 도전"],
+            study: ["🔢 초등 셈틀 수학", "📺 EBS 스타강사 인강", "📚 전공 서적 밤샘", "📝 자격증 기출 풀이", "🗣️ 원어민 프리토킹", "📊 고급 통계 분석", "🔬 학술지 심화 논문", "💡 특허 아이디어 출원", "🎓 석학 미팅 참석", "🧠 상대성 영역 도전"],
             hobby: ["🪞 거울 나만의 패션쇼", "🧴 올인원 피부 관리", "🎤 코노 보컬 트레이닝", "🕺 방송 댄스 클래스", "📸 OOTD 인스타 피드", "👗 디자이너 브랜드 착장", "💄 메이크업 스타일링", "🥂 인플루언서 파티", "📸 잡지 메인 커버 촬영", "✨ 레드카펫 입장"]
         };
 
@@ -176,20 +175,29 @@
         };
 
         const endingList = [
-            { id: "god", hint: "👑 모든 능력치 9레벨 만렙 도달", name: "👑 신 인류의 탄생", desc: "지력, 매력, 체력, 자본을 완벽히 동기화한 마스터 가이드의 탄생입니다.", badge: "👑 초월자의 패시브", effect: "모든 기본 능력치 Lv.2 상태로 파격 스타트!" },
+            { id: "god", hint: "👑 모든 능력치 9레벨 만렙 도달", name: "👑 신 인류의 탄생", desc: "지력, 매력, 체력, 자본을 완벽히 동기화한 마스터 가이드의 탄생입니다.", badge: "👑 초월자의 패시브", effect: "모든 스탯 초기 보너스 경험치 듬뿍 탑재!" },
             { id: "asset", hint: "💰 최종 보유 자금 200G 이상 완주", name: "💰 황금 제국의 지배자", desc: "압도적인 유동 자산을 확보하여 월스트리트를 뒤흔드는 자본 자산가입니다.", badge: "💰 다이아몬드 수저", effect: "초기 보유 자금 +80G 상태로 여유롭게 스타트!" },
-            { id: "exhaust", hint: "🏥 기력 부족 강제 기절 3회 이상", name: "🏥 만성 과로사 증후군", desc: "스케줄 연산 실패로 몸이 완전히 망가진 채 침대 신세를 지게 된 파멸의 워커홀릭입니다.", badge: "🏥 영혼의 바퀴벌레", effect: "체력 레벨 3단계 선행 스타트! (행동 비용 감소 효과)" },
-            { id: "scholar", hint: "🔬 지력 스탯 단독 9레벨 만렙 달성", name: "🔬 인류 지성을 뒤흔든 석학", desc: "사기꾼 무리를 완벽한 논리로 분쇄한 인공지능 수석 아키텍트입니다.", badge: "🧠 아인슈타인의 뇌", effect: "지력 레벨 3단계 선행 스타트! (고급 탐색 개방)" },
-            { id: "celeb", hint: "💎 매력 스탯 단독 9레벨 만렙 달성", name: "💎 시대를 리드하는 글로벌 탑 셀럽", desc: "숨만 쉬어도 바이럴 유행을 만드는 세계 최고의 패션 워너비입니다.", badge: "✨ 천만 아우라 조명", effect: "매력 레벨 3단계 선행 스타트! (상위 사교 개방)" },
-            { id: "physical", hint: "🏋️ 체력 스탯 단독 9레벨 만렙 달성", name: "🏋️ 신체 기믹 완전 개방 철인", desc: "올림픽 명예의 전당 프리패스급 인재. 재난 속에서 빛나는 괴력입니다.", badge: "💪 고농축 에르핀 근육", effect: "체력 레벨 3단계 선행 스타트!" },
-            { id: "ceo", hint: "💼 알바 스탯 단독 9레벨 만렙 달성", name: "💼 글로벌 프랜차이즈 연합 의장", desc: "알바 수완에서 시작해 국가 경제 구조의 유통망 네트워크를 삼겼습니다.", badge: "💼 백종원급 수완가", effect: "알바 레벨 3단계 선행 스타트! (초반 급여 가산)" },
-            { id: "cyborg", hint: "🤖 지력 7 + 체력 7 이상 조합 완주", name: "🤖 사이보그 마스터 마인드", desc: "지치지 않는 뇌 연산 장치와 강인한 심장을 장착한 테크 진화학 선두입니다.", badge: "🤖 안드로이드 연산력", effect: "지력 Lv.2 및 체력 Lv.2 선행 합산 스타트!" },
-            { id: "politician", hint: "🏛️ 지력 7 + 매력 7 이상 조합 완주", name: "🏛️ 국가 공인 천재 정치가", desc: "천재적인 미사여구 대중을 매료시키는 눈빛으로 법령을 쥐고 흔듭니다.", badge: "🏛️ 여론 통제 마스터", effect: "지력 Lv.2 및 매력 Lv.2 선행 합산 스타트!" },
-            { id: "strategist", hint: "📈 지력 7 + 알바 7 이상 조합 완주", name: "📈 자본주의 흑막 마켓 메이커", desc: "알바 실전 생리와 고등 통계를 엮어 거대 작전 헤지펀드를 통제합니다.", badge: "📈 작전 세력 탭", effect: "지력 Lv.2 및 알바 Lv.2 선행 합산 스타트!" },
-            { id: "model", hint: "📸 매력 7 + 체력 7 이상 조합 완주", name: "📸 밀라노 런웨이를 찢은 보디", desc: "다져진 조각 보디와 눈부신 아우라로 전 세계 패션 잡지를 독점합니다.", badge: "📸 인간 마네킹 아우라", effect: "매력 Lv.2 및 체력 Lv.2 선행 합산 스타트!" },
-            { id: "idol", hint: "🎤 매력 7 + 알바 7 이상 조합 완주", name: "🎤 메가 엔터테인먼트 총괄 이사", desc: "소셜 캐피탈과 필드 실무 수완을 엮어 차세대 스타들을 양성합니다.", badge: "🎤 황금 마이더스의 손", effect: "매력 Lv.2 및 알바 Lv.2 선행 합산 스타트!" },
-            { id: "agent", hint: "🥷 체력 7 + 알바 7 이상 조합 완주", name: "🥷 첩보 전문 특수 작전 요원", desc: "현장 위장 기술และ 은밀한 기동 피지컬을 결합해 비밀 임무를 뜁니다.", badge: "🥷 특수 기동 작전령", effect: "체력 Lv.2 및 알바 Lv.2 선행 합산 스타트!" },
-            { id: "elite", hint: "🎓 3개 스탯이 동시에 5레벨 이상 도달", name: "🎓 육각형 밸런스 엘리트", desc: "어느 한 곳 흠잡을 데 없는 고품격 육각형 능력치를 구축한 완벽한 융합 인재입니다.", badge: "🎓 대치동 명예 수석", effect: "지력/매력/체력 전원 1레벨씩 선행 보정!" },
+            { id: "exhaust", hint: "🏥 기력 부족 강제 기절 3회 이상", name: "🏥 만성 과로사 증후군", desc: "스케줄 연산 실패로 몸이 완전히 망가진 채 침대 신세를 지게 된 파멸의 워커홀릭입니다.", badge: "🏥 영혼의 바퀴벌레", effect: "체력 스탯 보너스 경험치 +9 포인트 선행!" },
+            
+            /* 📝 수정 포인트: 지력 만렙 엔딩 담백화 및 대사(따옴표) 처리 적용 */
+            { id: "scholar", hint: "🔬 지력 스탯 단독 9레벨 만렙 달성", name: "🔬 국가 대표급 명석한 두뇌", desc: "\"방금 하신 말씀, 전부 오류네요.\" 사기꾼들의 얄팍한 속임수를 빈틈없는 논리로 반박해 버리는 공부 괴물입니다. 세상의 모든 정답을 꿰뚫어 보는 최고의 지성을 증명했습니다.", badge: "🧠 아인슈타인의 뇌", effect: "지력 초기 보너스 경험치 +9 가산 (중첩 가능)" },
+            
+            { id: "celeb", hint: "💎 매력 스탯 단독 9레벨 만렙 달성", name: "💎 시대를 리드하는 글로벌 탑 셀럽", desc: "숨만 쉬어도 바이럴 유행을 만드는 세계 최고의 패션 워너비입니다.", badge: "✨ 천만 아우라 조명", effect: "매력 초기 보너스 경험치 +9 가산 (중첩 가능)" },
+            
+            /* 📝 수정 포인트: 체력 만렙 엔딩 대사 통일 및 묵직한 현실 피지컬 톤 적용 */
+            { id: "physical", hint: "🏋️ 체력 스탯 단독 9레벨 만렙 달성", name: "🏋️ 인간의 한계를 넘어선 피지컬", desc: "\"다치기 싫으면 비켜 계세요.\" 웬만한 위기 상황이나 무거운 짐쯤은 맨손으로 가볍게 해결해 버리는 괴력의 소유자입니다. 강인한 체력과 완벽한 보디 스펙으로 세상을 지배합니다.", badge: "💪 고농축 에르핀 근육", effect: "체력 초기 보너스 경험치 +9 가산 (중첩 가능)" },
+            
+            { id: "ceo", hint: "💼 알바 스탯 단독 9레벨 만렙 달성", name: "💼 글로벌 프랜차이즈 연합 의장", desc: "알바 수완에서 시작해 국가 경제 구조의 유통망 네트워크를 삼겼습니다.", badge: "💼 백종원급 수완가", effect: "알바 초기 보너스 경험치 +9 가산 (중첩 가능)" },
+            
+            /* 📝 수정 포인트: 2개 스탯 복합형 뱃지 가산 수치를 2레벨 고정에서 경험치 +5/+5 무한 중첩형으로 밸런스 변경 */
+            { id: "cyborg", hint: "🤖 지력 7 + 체력 7 이상 조합 완주", name: "🤖 사이보그 마스터 마인드", desc: "지치지 않는 뇌 연산 장치와 강인한 심장을 장착한 테크 진화학 선두입니다.", badge: "🤖 안드로이드 연산력", effect: "지력 경험치 +5 및 체력 경험치 +5 정밀 가산!" },
+            { id: "politician", hint: "🏛️ 지력 7 + 매력 7 이상 조합 완주", name: "🏛️ 국가 공인 천재 정치가", desc: "천재적인 미사여구 대중을 매료시키는 눈빛으로 법령을 쥐고 흔듭니다.", badge: "🏛️ 여론 통제 마스터", effect: "지력 경험치 +5 및 매력 경험치 +5 정밀 가산!" },
+            { id: "strategist", hint: "📈 지력 7 + 알바 7 이상 조합 완주", name: "📈 자본주의 흑막 마켓 메이커", desc: "알바 실전 생리와 고등 통계를 엮어 거대 작전 헤지펀드를 통제합니다.", badge: "📈 작전 세력 탭", effect: "지력 경험치 +5 및 알바 경험치 +5 정밀 가산!" },
+            { id: "model", hint: "📸 매력 7 + 체력 7 이상 조합 완주", name: "📸 밀라노 런웨이를 찢은 보디", desc: "다져진 조각 보디와 눈부신 아우라로 전 세계 패션 잡지를 독점합니다.", badge: "📸 인간 마네킹 아우라", effect: "매력 경험치 +5 및 체력 경험치 +5 정밀 가산!" },
+            { id: "idol", hint: "🎤 매력 7 + 알바 7 이상 조합 완주", name: "🎤 메가 엔터테인먼트 총괄 이사", desc: "소셜 캐피탈과 필드 실무 수완을 엮어 차세대 스타들을 양성합니다.", badge: "🎤 황금 마이더스의 손", effect: "매력 경험치 +5 및 알바 경험치 +5 정밀 가산!" },
+            { id: "agent", hint: "🥷 체력 7 + 알바 7 이상 조합 완주", name: "🥷 첩보 전문 특수 작전 요원", desc: "현장 위장 기술และ 은밀한 기동 피지컬을 결합해 비밀 임무를 뜁니다.", badge: "🥷 특수 기동 작전령", effect: "체력 경험치 +5 및 알바 경험치 +5 정밀 가산!" },
+            
+            { id: "elite", hint: "🎓 3개 스탯이 동시에 5레벨 이상 도달", name: "🎓 육각형 밸런스 엘리트", desc: "어느 한 곳 흠잡을 데 없는 고품격 육각형 능력치를 구축 한 완벽한 융합 인재입니다.", badge: "🎓 대치동 명예 수석", effect: "지력/매력/체력에 각각 경험치 +2씩 보정!" },
             { id: "lucky", hint: "🍀 백팩에 네잎클로버를 소지한 채 완주", name: "🍀 운명 초월 기적의 로또 주인공", desc: "능력치와 무관하게 평생 편하게 놀고먹는 축복받은 백수 엔딩입니다.", badge: "🍀 신이 내린 로또 행운", effect: "매일 야간 상점에서 복권 하나를 공짜 무상 지급!" },
             { id: "normal", hint: "🛌 특수 엔딩 조건에 모두 미달 시 생존", name: "🛌 스트레스 제로 웰빙 해탈 가이드", desc: "큰 욕심 없이 세상의 억까 속에서 상처 하나 없이 정신 건강을 보존했습니다.", badge: "🛌 소소한 웰빙의 평화", effect: "매일 아침 '당일 소멸성' 기력 +10 영양제 전용 지급!" }
         ];
@@ -201,12 +209,12 @@
             document.getElementById('game-container').innerHTML = `
                 <div class="title-screen">
                     <div>
-                        <span style="font-size:11px; font-weight:700; color:#b83280; background:#fff0f6; padding:4px 10px; border-radius:20px;">v19.8 오타 완벽 수동 픽스</span>
+                        <span style="font-size:11px; font-weight:700; color:#b83280; background:#fff0f6; padding:4px 10px; border-radius:20px;">v20.0 뱃지 경험치 중첩 시스템 빌드</span>
                     </div>
                     <h1 class="main-title">7일간의<br>인생 역전 시뮬레이터</h1>
-                    <p style="font-size:12px; color:#666; line-height:1.4;">조건 미달 및 자금 부족 선택지가 직관적인 짙은 회색으로 완전히 차단됩니다.</p>
+                    <p style="font-size:12px; color:#666; line-height:1.4;"> 초월자 엔딩에 도전하세요!</p>
                     <div class="menu-btn-group">
-                        <button class="btn-menu btn-menu-start" onclick="showSetupScreen()">🚀 캐릭터 설계 및 뱃지 설정</button>
+                        <button class="btn-menu btn-menu-start" onclick="showSetupScreen()">🚀 게임 시작하기</button>
                         <button class="btn-menu btn-menu-book" onclick="showArchiveBook()">📖 엔딩 & 보상 뱃지 도감</button>
                     </div>
                 </div>
@@ -232,11 +240,12 @@
             endingList.forEach(end => {
                 const isUnlocked = localStorage.getItem(`end_lock_${end.id}`) === "true";
                 if (isUnlocked) {
+                    // showArchiveBook 함수 내부의 이 부분을 확인하세요!
                     html += `
                         <div class="ending-card unlocked">
                             <div class="end-name">${end.name} (✓ 보유함)</div>
                             <div class="end-desc">${end.desc}</div>
-                            <div class="badge-reward-info">🏅 획득 보상 뱃지: [${end.badge}] $\rightarrow$ ${end.effect}</div>
+                            <div class="badge-reward-info">🏅 획득 보상 뱃지: [${end.badge}] -> ${end.effect}</div>
                             <div class="ending-illustration">${endingIllustrations[end.id]}</div>
                         </div>
                     `;
@@ -282,7 +291,7 @@
                     
                     <div class="badge-select-zone">
                         <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <label style="font-size:13px; font-weight:800; color:#5f3dc4;">🏅 보상 뱃지 세팅 (최대 3개)</label>
+                            <label style="font-size:13px; font-weight:800; color:#5f3dc4;">🏅 보상 뱃지 세팅 (최대 3개 중첩)</label>
                             <span style="font-size:11px; font-weight:700; color:#228be6;" id="badge-count-text">선택: 0 / 3</span>
                         </div>
                         <div class="badge-grid" id="badge-setup-grid">`;
@@ -341,6 +350,7 @@
             document.getElementById('gender-f').className = gender === '여성' ? 'gender-btn selected-female' : 'gender-btn';
         }
 
+        /* 📝 수정 포인트: 수치 변경(+9, +5/+5) 및 순수 누적 연산 이월 시스템 전면 교체 적용 */
         function startGame() {
             const inputName = document.getElementById('player-name').value.trim();
             if (inputName !== "") playerName = inputName;
@@ -357,27 +367,60 @@
             currentExp = { int: 0, cha: 0, str: 0, job: 0 };
 
             let logIntroAdditions = [];
+
+            // 임시 경험치 저축 주머니 생성 (순수 중첩 스태킹용)
+            let pendingExp = { int: 0, cha: 0, str: 0, job: 0 };
+
             selectedBadges.forEach(id => {
-                if (id === 'scholar') { levels.int = 3; logIntroAdditions.push("🧠지력Lv.3"); }
-                else if (id === 'celeb') { levels.cha = 3; logIntroAdditions.push("✨매력Lv.3"); }
-                else if (id === 'physical') { levels.str = 3; logIntroAdditions.push("💪체력Lv.3"); }
-                else if (id === 'ceo') { levels.job = 3; logIntroAdditions.push("💼알바Lv.3"); }
+                // [단독 특화형 뱃지]: 구버전 Lv.3 고정형 -> 신버전 경험치 +9 무한 스태킹 연산식으로 전면 전환
+                if (id === 'scholar') { pendingExp.int += 9; logIntroAdditions.push("🧠지력 경험치+9"); }
+                else if (id === 'celeb') { pendingExp.cha += 9; logIntroAdditions.push("✨매력 경험치+9"); }
+                else if (id === 'physical') { pendingExp.str += 9; logIntroAdditions.push("💪체력 경험치+9"); }
+                else if (id === 'ceo') { pendingExp.job += 9; logIntroAdditions.push("💼알바 경험치+9"); }
+                else if (id === 'exhaust') { pendingExp.str += 9; logIntroAdditions.push("🏥체력 경험치+9"); }
+                
+                // [복합 하이브리드형 뱃지]: 구버전 Lv.2 고정형 -> 신버전 경험치 +5 / +5 무한 스태킹 연산식으로 전면 전환
+                else if (id === 'cyborg') { pendingExp.int += 5; pendingExp.str += 5; logIntroAdditions.push("🤖지력+5/체력+5"); }
+                else if (id === 'politician') { pendingExp.int += 5; pendingExp.cha += 5; logIntroAdditions.push("🏛️지력+5/매력+5"); }
+                else if (id === 'strategist') { pendingExp.int += 5; pendingExp.job += 5; logIntroAdditions.push("📈지력+5/알바+5"); }
+                else if (id === 'model') { pendingExp.cha += 5; pendingExp.str += 5; logIntroAdditions.push("📸매력+5/체력+5"); }
+                else if (id === 'idol') { pendingExp.cha += 5; pendingExp.job += 5; logIntroAdditions.push("🎤매력+5/알바+5"); }
+                else if (id === 'agent') { pendingExp.str += 5; pendingExp.job += 5; logIntroAdditions.push("🥷체력+5/알바+5"); }
+                
+                // [기타 특수 기능성 뱃지]
                 else if (id === 'asset') { gold = 80; logIntroAdditions.push("💰초기자금+80G"); }
-                else if (id === 'exhaust') { levels.str = 3; logIntroAdditions.push("🏥체력Lv.3 선행"); }
-                else if (id === 'god') { levels.int = 2; levels.cha = 2; levels.str = 2; levels.job = 2; logIntroAdditions.push("👑전스탯Lv.2"); }
-                else if (id === 'cyborg') { levels.int = 2; levels.str = 2; logIntroAdditions.push("🤖지력/체력Lv.2"); }
-                else if (id === 'politician') { levels.int = 2; levels.cha = 2; logIntroAdditions.push("🏛️지력/매력Lv.2"); }
-                else if (id === 'strategist') { levels.int = 2; levels.job = 2; logIntroAdditions.push("📈지력/알바Lv.2"); }
-                else if (id === 'model') { levels.cha = 2; levels.str = 2; logIntroAdditions.push("📸매력/체력Lv.2"); }
-                else if (id === 'idol') { levels.cha = 2; levels.job = 2; logIntroAdditions.push("🎤매력/알바Lv.2"); }
-                else if (id === 'agent') { levels.str = 2; levels.job = 2; logIntroAdditions.push("🥷체력/알바Lv.2"); }
-                else if (id === 'elite') { levels.int = 1; levels.cha = 1; levels.str = 1; logIntroAdditions.push("🎓3개스탯Lv.1"); }
+                else if (id === 'god') { 
+                    pendingExp.int += 5; pendingExp.cha += 5; pendingExp.str += 5; pendingExp.job += 5; 
+                    logIntroAdditions.push("👑전스탯 경험치+5"); 
+                }
+                else if (id === 'elite') { 
+                    pendingExp.int += 2; pendingExp.cha += 2; pendingExp.str += 2; 
+                    logIntroAdditions.push("🎓3개스탯 경험치+2"); 
+                }
+            });
+
+            // 누적된 저축 경험치를 바탕으로 연속 레벨업 및 이월 환산 프로세스 가동
+            const statTypes = ['int', 'cha', 'str', 'job'];
+            statTypes.forEach(type => {
+                let amount = pendingExp[type];
+                if (amount > 0) {
+                    currentExp[type] += amount;
+                    while (currentExp[type] >= getRequiredExp(levels[type])) {
+                        currentExp[type] -= getRequiredExp(levels[type]);
+                        levels[type]++;
+                        if (levels[type] >= 9) {
+                            levels[type] = 9;
+                            currentExp[type] = 0;
+                            break;
+                        }
+                    }
+                }
             });
 
             generateShopItems();
             renderBaseLayout();
             
-            let badgeAlert = selectedBadges.length > 0 ? `<br><span style="color:#5f3dc4; font-weight:700;">[🏅 장착 버프 활성화]: ${logIntroAdditions.join(', ')} 이 적용되었습니다!</span>` : "";
+            let badgeAlert = selectedBadges.length > 0 ? `<br><span style="color:#5f3dc4; font-weight:700;">[🏅 뱃지 중첩 연산 완료]: ${logIntroAdditions.join(', ')} 수치가 환산되어 적용되었습니다.</span>` : "";
             document.getElementById('log-text').innerHTML = `${playerName}님, 시뮬레이션이 시작되었습니다! 아래 가이드에 따라 자유롭게 스케줄을 운영해 보세요.${badgeAlert}`;
             
             if (selectedBadges.includes('normal')) {
@@ -609,10 +652,10 @@
                     htmlContent += `<button class="btn btn-train" onclick="doAction('train', ${cost})"><span>🏋️ ${contentSheet.train[levels.str]}</span><span class="badge">기력-${cost}</span></button>`;
                 } else if (type === 'study') {
                     const cost = getAdjustedCost(15);
-                    htmlContent += `<button class="btn btn-study" onclick="doAction('study', ${cost})"><span>📚 ${contentSheet.study[levels.int]}</span><span class="badge">기력-${cost}</span></button>`;
+                    htmlContent += `<button class="btn btn-study" onclick="doAction('study', ${levels.int >= 10 ? 9 : levels.int}])"><span>📚 ${contentSheet.study[levels.int >= 10 ? 9 : levels.int]}</span><span class="badge">기력-${cost}</span></button>`;
                 } else if (type === 'hobby') {
                     const cost = getAdjustedCost(15);
-                    htmlContent += `<button class="btn btn-hobby" onclick="doAction('hobby', ${cost})"><span>🎨 ${contentSheet.hobby[levels.cha]}</span><span class="badge">기력-${cost}</span></button>`;
+                    htmlContent += `<button class="btn btn-hobby" onclick="doAction('hobby', ${levels.cha >= 10 ? 9 : levels.cha}])"><span>🎨 ${contentSheet.hobby[levels.cha >= 10 ? 9 : levels.cha]}</span><span class="badge">기력-${cost}</span></button>`;
                 } else if (type === 'rest') {
                     htmlContent += `<button class="btn btn-rest" onclick="doAction('rest', -12)"><span>🛌 낮잠 휴식</span><span class="badge">기력 +12</span></button>`;
                 }
@@ -686,7 +729,7 @@
                 currentExp[type] -= getRequiredExp(levels[type]);
                 levels[type]++;
                 lvUpCount++;
-                if (levels[type] >= 9) { currentExp[type] = 0; break; }
+                if (levels[type] >= 9) { levels[type] = 9; currentExp[type] = 0; break; }
             }
             let typeName = type === 'int' ? '🧠 지력' : type === 'cha' ? '✨ 매력' : type === 'str' ? '💪 체력' : '💼 알바';
             if (lvUpCount > 0) {
@@ -801,7 +844,6 @@
             else if (day === 7) triggerDay7Event(morningAlert);
         }
 
-        /* 🚨 [돌발 상황 제어장치]: 보유 자금 및 조건 미달 시 완벽한 짙은 회색 및 클릭 완전 차단(disabled) 적용 */
         function triggerDay2Event(extra) {
             const coinLocked = gold < 30; 
             const smartLocked = levels.int < 2; 
@@ -882,8 +924,12 @@
             else if (choice === 'runway-pass') { resultMsg = "🧘 결과: 평화 가치 보존."; }
             else if (choice === 'runway-walk') { gold += 20; resultMsg = "🕴️ 결과: 뚝딱이 챌린지 밈 바이럴 정산. (+20G)"; }
             else if (choice === 'runway-god') {
-                levels.int++; levels.cha++; levels.str++; levels.job++;
-                resultMsg = "👑 결과: 전 무대 장악! 전 스탯 단계가 한 단계 가산됩니다! (전체 Lv +1)";
+                /* 🚨 오류 예외 처리 완료: 보상 획득 시 9레벨 만렙 상한 절대 초과 불가능 고정 */
+                levels.int = Math.min(9, levels.int + 1);
+                levels.cha = Math.min(9, levels.cha + 1);
+                levels.str = Math.min(9, levels.str + 1);
+                levels.job = Math.min(9, levels.job + 1);
+                resultMsg = "👑 결과: 전 무대 장악! 전 스탯 단계가 한 단계 가산됩니다! (전체 Lv +1, 최대 9레벨 상한 고정)";
             }
 
             document.getElementById('display-panel').innerHTML = `<p class="log-text">${resultMsg}</p>`;
@@ -902,22 +948,42 @@
             if (levels.str >= 5) eliteStatsCount++;
             if (levels.job >= 5) eliteStatsCount++;
 
+            // 1. 최상위 엔딩 독점 우선순위 검증
             if (faintCount >= 3) { endingId = "exhaust"; }
             else if (levels.int >= 9 && levels.cha >= 9 && levels.str >= 9 && levels.job >= 9) { endingId = "god"; }
-            else if (hasClover) { endingId = "lucky"; }
             else if (gold >= 200) { endingId = "asset"; }
-            else if (levels.int >= 9) { endingId = "scholar"; }
-            else if (levels.cha >= 9) { endingId = "celeb"; }
-            else if (levels.str >= 9) { endingId = "physical"; }
-            else if (levels.job >= 9) { endingId = "ceo"; }
-            else if (levels.int >= 7 && levels.str >= 7) { endingId = "cyborg"; }
-            else if (levels.int >= 7 && levels.cha >= 7) { endingId = "politician"; }
-            else if (levels.int >= 7 && levels.job >= 7) { endingId = "strategist"; }
-            else if (levels.cha >= 7 && levels.str >= 7) { endingId = "model"; }
-            else if (levels.cha >= 7 && levels.job >= 7) { endingId = "idol"; }
-            else if (levels.str >= 7 && levels.job >= 7) { endingId = "agent"; }
-            else if (eliteStatsCount >= 3) { endingId = "elite"; }
-            else { endingId = "normal"; }
+            else {
+                // 4순위 그룹: 조건이 맞물리는 '나머지' 11종의 타겟 후보군 추출
+                let candidates = [];
+                
+                if (levels.int >= 9) candidates.push("scholar");
+                if (levels.cha >= 9) candidates.push("celeb");
+                if (levels.str >= 9) candidates.push("physical");
+                if (levels.job >= 9) candidates.push("ceo");
+                if (levels.int >= 7 && levels.str >= 7) candidates.push("cyborg");
+                if (levels.int >= 7 && levels.cha >= 7) candidates.push("politician");
+                if (levels.int >= 7 && levels.job >= 7) candidates.push("strategist");
+                if (levels.cha >= 7 && levels.str >= 7) candidates.push("model");
+                if (levels.cha >= 7 && levels.job >= 7) candidates.push("idol");
+                if (levels.str >= 7 && levels.job >= 7) candidates.push("agent");
+                if (eliteStatsCount >= 3) candidates.push("elite");
+
+                if (candidates.length > 0) {
+                    /* 🔥 [스마트 우선정산 필터링]: 후보 중 "본 적 없는(도감 잠금 상태)" 엔딩만 정밀 식별 */
+                    let lockedCandidates = candidates.filter(id => localStorage.getItem(`end_lock_${id}`) !== "true");
+                    
+                    if (lockedCandidates.length > 0) {
+                        // 미수집 엔딩이 존재한다면 그중 첫 번째 카드를 즉시 최우선 반환
+                        endingId = lockedCandidates[0];
+                    } else {
+                        // 모두 이미 획득한 엔딩카드라면 기본 후보군의 첫 타자를 자연스럽게 낙찰
+                        endingId = candidates[0];
+                    }
+                } 
+                // 5, 6순위 최하위 기본 검증
+                else if (hasClover) { endingId = "lucky"; }
+                else { endingId = "normal"; }
+            }
 
             let currentEndingObj = endingList.find(e => e.id === endingId);
             localStorage.setItem(`end_lock_${endingId}`, "true");
